@@ -1,34 +1,34 @@
-# 🎓 ODIN Language Center - Hệ Thống Quản Lý Trung Tâm Anh Ngữ
+# ODIN Language Center - Hệ Thống Quản Lý Trung Tâm Anh Ngữ
 
-Ứng dụng Java Swing quản lý trung tâm tiếng Anh với 4 roles: Admin, Staff, Teacher, Student.
+Ứng dụng Java Swing quản lý trung tâm tiếng Anh với 4 roles: Admin, Staff, Teacher, Student, sử dụng MYSQL và FLATLAF cho UI.
 
-## ✨ Tính Năng Chính
+## Tính Năng Chính
 
-### 👨‍💼 Admin Dashboard
+### Admin Dashboard
 - Quản lý người dùng (Staff, Teacher, Student)
 - Quản lý khóa học & lớp học
 - Quản lý giao dịch thanh toán
 - Báo cáo & thống kê chi tiết
 - Xuất báo cáo CSV
 
-### 👥 Staff Dashboard
+### Staff Dashboard
 - Xử lý yêu cầu hỗ trợ
 - Quản lý bài viết/thông báo
 - Quản lý lịch học
 - Điểm danh học viên
 
-### 👨‍🏫 Teacher Dashboard
+### Teacher Dashboard
 - Xem lớp được phân công
 - Lịch giảng dạy
-- **Điểm danh học viên** ✅
+- Điểm danh học viên
 - Thống kê giảng dạy
 
-### 🎓 Student Dashboard  
+### Student Dashboard  
 - Xem khóa học đã đăng ký
 - Lịch sử thanh toán
 - Quản lý hồ sơ cá nhân
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Language:** Java 17+
 - **UI Framework:** Swing với FlatLaf
@@ -36,7 +36,7 @@
 - **Architecture:** MVC Pattern
 - **JDBC:** MySQL Connector 8.0.33
 
-## 📁 Cấu Trúc Dự Án
+## Cấu Trúc Dự Án
 
 ```
 src/
@@ -62,7 +62,7 @@ database/
 └── schema.sql         # Database schema & sample data
 ```
 
-## 🚀 Cài Đặt & Chạy
+## Cài Đặt & Chạy
 
 ### 1. Yêu Cầu Hệ Thống
 - JDK 17 trở lên
@@ -114,7 +114,7 @@ java -cp "bin;lib/*" Main
 | Teacher | teacher1 | 123456 |
 | Student | student1 | 123456 |
 
-## 📊 Database Schema
+## Database Schema
 
 **14 Tables:**
 - `tbl_users` - Người dùng chính
@@ -132,23 +132,14 @@ java -cp "bin;lib/*" Main
 - `tbl_documents` - Tài liệu
 - `tbl_ratings` - Đánh giá
 
-## 🎨 UI Features
-
-- Modern flat design với FlatLaf  
-- Responsive layouts
-- Vietnamese language support
-- Consistent color scheme
-- Professional dashboards
-- Interactive tables & forms
-
-## 🔐 Bảo Mật
+## Bảo Mật
 
 - Password hashing (sẽ implement)
 - Role-based access control
 - Session management
 - SQL injection prevention (PreparedStatement)
 
-## 📝 Sample Data
+## Sample Data
 
 Schema bao gồm:
 - 35 users (admin, staff, teachers, students)
@@ -158,7 +149,7 @@ Schema bao gồm:
 - 22 schedules
 - 20+ transactions
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 **Lỗi kết nối database:**
 ```
@@ -173,34 +164,11 @@ Kiểm tra JDK version >= 17
 Kiểm tra lib/ có đủ jar files
 ```
 
-## 📚 Development Notes
+## Author
 
-**Key Design Patterns:**
-- MVC Architecture
-- Repository Pattern
-- Dependency Injection
-- Observer Pattern (UI updates)
+**Dương Văn Hải**
 
-**Code Standards:**
-- Vietnamese comments
-- Consistent naming
-- Clean code principles
-- Proper error handling
-
-## 🚧 Roadmap
-
-- [ ] Implement password hashing
-- [ ] Add email notifications
-- [ ] Export reports to PDF
-- [ ] Advanced analytics dashboard
-- [ ] Mobile responsive design
-- [ ] REST API layer
-
-## 👨‍💻 Author
-
-**ODIN Language Center Development Team**
-
-## 📄 License
+## License
 
 Educational Project - Free to use and modify
 
@@ -208,4 +176,4 @@ Educational Project - Free to use and modify
 
 **Version:** 2.0  
 **Last Updated:** 2025-12-29  
-**Status:** Active Development ✅
+**Status:** Active Development
