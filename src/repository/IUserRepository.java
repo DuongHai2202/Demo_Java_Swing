@@ -1,7 +1,7 @@
 package repository;
 
 import models.User;
-import models.UserRole;
+import utils.enums.UserRole;
 import java.util.List;
 
 /**

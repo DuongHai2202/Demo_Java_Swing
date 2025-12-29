@@ -1,13 +1,13 @@
-package models;
+package utils.enums;
 
 /**
  * Enum cho trạng thái lớp học
  */
 public enum ClassStatus {
-    SAP_MO("Sắp mở"),
-    DANG_MO_LOP("Đang mở lớp"),
+    CHUA_BAT_DAU("Chưa bắt đầu"),
+    DANG_DIEN_RA("Đang diễn ra"),
     DA_KET_THUC("Đã kết thúc"),
-    DA_HUY("Đã hủy");
+    BI_HUY("Bị hủy");
 
     private final String displayName;
 
@@ -19,19 +19,16 @@ public enum ClassStatus {
         return displayName;
     }
 
-    /**
-     * Lấy ClassStatus từ tên hiển thị (dùng khi đọc từ Database)
-     */
     public static ClassStatus fromDisplayName(String text) {
         if (text == null || text.trim().isEmpty()) {
-            return SAP_MO; // Default
+            return CHUA_BAT_DAU;
         }
         for (ClassStatus status : ClassStatus.values()) {
             if (status.displayName.equalsIgnoreCase(text)) {
                 return status;
             }
         }
-        return SAP_MO; // Default if not found
+        return CHUA_BAT_DAU;
     }
 
     @Override

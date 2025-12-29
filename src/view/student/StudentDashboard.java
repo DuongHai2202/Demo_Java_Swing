@@ -1,9 +1,13 @@
 package view.student;
 
+import controller.student.StudentController;
 import service.CourseService;
 import models.Course;
 import models.User;
 import view.LoginFrame;
+import view.student.panels.MyCoursesPanel;
+import view.student.panels.PaymentHistoryPanel;
+import view.student.panels.ProfilePanel;
 import utils.UIUtils;
 
 import javax.swing.*;
@@ -21,10 +25,17 @@ public class StudentDashboard extends JFrame {
     private User currentUser;
     private JPanel contentPanel;
     private CourseService courseService;
+    private StudentController controller;
+
+    // Panels
+    private MyCoursesPanel myCoursesPanel;
+    private PaymentHistoryPanel paymentHistoryPanel;
+    private ProfilePanel profilePanel;
 
     public StudentDashboard(User user) {
         this.currentUser = user;
         this.courseService = new CourseService();
+        this.controller = new StudentController(user);
         initComponents();
     }
 
@@ -90,7 +101,6 @@ public class StudentDashboard extends JFrame {
         addMenuItem(sidebar, "Khóa Học", e -> showCourses());
         addMenuItem(sidebar, "Khóa Học Của Tôi", e -> switchContent("Khóa Học Của Tôi"));
         addMenuItem(sidebar, "Thanh Toán", e -> switchContent("Thanh Toán"));
-        addMenuItem(sidebar, "Đánh Giá", e -> switchContent("Đánh Giá Khóa Học"));
         addMenuItem(sidebar, "Tài Khoản", e -> switchContent("Tài Khoản Cá Nhân"));
 
         sidebar.add(Box.createVerticalGlue());
@@ -131,12 +141,61 @@ public class StudentDashboard extends JFrame {
         homePanel.setLayout(new BoxLayout(homePanel, BoxLayout.Y_AXIS));
         homePanel.setBackground(UIUtils.LIGHT_BG);
 
+        // Welcome Card
+        JPanel welcomeCard = UIUtils.createCardPanel();
+        welcomeCard.setLayout(new BorderLayout(UIUtils.SPACING_MD, UIUtils.SPACING_MD));
+        welcomeCard.setMaximumSize(new Dimension(Integer.MAX_VALUE, 120));
+
         JLabel welcomeLabel = UIUtils.createHeaderLabel("Chào mừng, " + currentUser.getFullName() + "!");
-        homePanel.add(welcomeLabel);
+        JLabel subtitle = UIUtils.createSecondaryLabel("Hệ thống học viên ODIN Language Center");
+
+        JPanel textPanel = new JPanel();
+        textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
+        textPanel.setOpaque(false);
+        textPanel.add(welcomeLabel);
+        textPanel.add(Box.createVerticalStrut(UIUtils.SPACING_SM));
+        textPanel.add(subtitle);
+
+        welcomeCard.add(textPanel, BorderLayout.CENTER);
+
+        homePanel.add(welcomeCard);
+        homePanel.add(Box.createVerticalStrut(UIUtils.SPACING_LG));
+
+        // Quick Stats Cards
+        JPanel statsPanel = new JPanel(new GridLayout(1, 3, UIUtils.SPACING_MD, 0));
+        statsPanel.setOpaque(false);
+        statsPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
+
+        statsPanel.add(createStatCard("Khóa Học", "0", UIUtils.PRIMARY_COLOR));
+        statsPanel.add(createStatCard("Điểm Danh", "0%", UIUtils.ACCENT_COLOR));
+        statsPanel.add(createStatCard("Thanh Toán", "0đ", UIUtils.SECONDARY_COLOR));
+
+        homePanel.add(statsPanel);
+        homePanel.add(Box.createVerticalGlue());
 
         contentPanel.add(homePanel, BorderLayout.CENTER);
         contentPanel.revalidate();
         contentPanel.repaint();
+    }
+
+    private JPanel createStatCard(String title, String value, Color color) {
+        JPanel card = UIUtils.createCardPanel();
+        card.setLayout(new BorderLayout());
+
+        JLabel lblValue = new JLabel(value);
+        lblValue.setFont(new Font("Segoe UI", Font.BOLD, 32));
+        lblValue.setForeground(color);
+        lblValue.setHorizontalAlignment(SwingConstants.CENTER);
+
+        JLabel lblTitle = new JLabel(title);
+        lblTitle.setFont(UIUtils.NORMAL_FONT);
+        lblTitle.setForeground(UIUtils.TEXT_SECONDARY);
+        lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
+
+        card.add(lblValue, BorderLayout.CENTER);
+        card.add(lblTitle, BorderLayout.SOUTH);
+
+        return card;
     }
 
     private void showCourses() {
@@ -194,7 +253,9 @@ public class StudentDashboard extends JFrame {
             int selectedRow = courseTable.getSelectedRow();
             if (selectedRow >= 0) {
                 String courseName = (String) courseTable.getValueAt(selectedRow, 1);
-                UIUtils.showSuccess(this, "Đã gửi yêu cầu đăng ký khóa: " + courseName);
+                UIUtils.showInfo(this, "Để đăng ký khóa " + courseName + ", vui lòng liên hệ:\n" +
+                        "☎ Hotline: 1900-xxxx\n" +
+                        "📧 Email: contact@odin.edu.vn");
             } else {
                 UIUtils.showError(this, "Vui lòng chọn khóa học!");
             }
@@ -203,8 +264,21 @@ public class StudentDashboard extends JFrame {
         viewDetailButton.addActionListener(e -> {
             int selectedRow = courseTable.getSelectedRow();
             if (selectedRow >= 0) {
+                String courseCode = (String) courseTable.getValueAt(selectedRow, 0);
                 String courseName = (String) courseTable.getValueAt(selectedRow, 1);
-                UIUtils.showSuccess(this, "Xem chi tiết khóa: " + courseName);
+                String level = (String) courseTable.getValueAt(selectedRow, 2);
+                String duration = courseTable.getValueAt(selectedRow, 3).toString();
+                String fee = (String) courseTable.getValueAt(selectedRow, 4);
+
+                String details = String.format(
+                        "Thông tin khóa học:\n\n" +
+                                "Mã: %s\n" +
+                                "Tên: %s\n" +
+                                "Trình độ: %s\n" +
+                                "Thời lượng: %s giờ\n" +
+                                "Học phí: %s",
+                        courseCode, courseName, level, duration, fee);
+                UIUtils.showInfo(this, details);
             } else {
                 UIUtils.showError(this, "Vui lòng chọn khóa học!");
             }
@@ -224,7 +298,30 @@ public class StudentDashboard extends JFrame {
 
     private void switchContent(String title) {
         contentPanel.removeAll();
-        contentPanel.add(new JLabel("Đang phát triển: " + title));
+
+        switch (title) {
+            case "Khóa Học Của Tôi":
+                if (myCoursesPanel == null) {
+                    myCoursesPanel = new MyCoursesPanel(controller);
+                }
+                contentPanel.add(myCoursesPanel, BorderLayout.CENTER);
+                break;
+
+            case "Thanh Toán":
+                if (paymentHistoryPanel == null) {
+                    paymentHistoryPanel = new PaymentHistoryPanel(controller);
+                }
+                contentPanel.add(paymentHistoryPanel, BorderLayout.CENTER);
+                break;
+
+            case "Tài Khoản Cá Nhân":
+                if (profilePanel == null) {
+                    profilePanel = new ProfilePanel(controller);
+                }
+                contentPanel.add(profilePanel, BorderLayout.CENTER);
+                break;
+        }
+
         contentPanel.revalidate();
         contentPanel.repaint();
     }

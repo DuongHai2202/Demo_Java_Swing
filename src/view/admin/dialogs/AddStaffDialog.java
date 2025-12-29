@@ -2,7 +2,7 @@ package view.admin.dialogs;
 
 import models.Staff;
 import models.User;
-import models.UserRole;
+import utils.enums.UserRole;
 import utils.UIUtils;
 
 import javax.swing.*;
@@ -188,10 +188,10 @@ public class AddStaffDialog extends JDialog {
         user.setAddress(address.isEmpty() ? null : address);
         user.setRole(UserRole.NHAN_VIEN);
         String genderString = maleBtn.isSelected() ? "Nam" : (femaleBtn.isSelected() ? "Nữ" : "Khác");
-        user.setGender(models.Gender.fromDisplayName(genderString));
+        user.setGender(utils.enums.Gender.fromDisplayName(genderString));
 
         String statusString = (String) statusComboBox.getSelectedItem();
-        user.setStatus(models.UserStatus.fromDisplayName(statusString));
+        user.setStatus(utils.enums.UserStatus.fromDisplayName(statusString));
 
         String dobStr = dobField.getText().trim();
         if (!dobStr.isEmpty()) {

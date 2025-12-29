@@ -1,16 +1,27 @@
 package view.admin.dialogs;
 
 import models.Transaction;
+import utils.enums.PaymentMethod;
+import utils.enums.TransactionStatus;
+import utils.enums.TransactionType;
 import utils.UIUtils;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.math.BigDecimal;
 
 /**
- * Dialog to add/edit transactions
+ * TransactionDialog - Dialog thêm/sửa giao dịch với UI đẹp
  */
 public class TransactionDialog extends JDialog {
+    // Constants
+    private static final int DIALOG_WIDTH = 550;
+    private static final int DIALOG_HEIGHT = 600;
+    private static final int FIELD_HEIGHT = 35;
+    private static final Color SECTION_BG = new Color(249, 250, 251);
+
+    // UI Components
     private JTextField codeField;
     private JTextField studentIdField;
     private JTextField enrollmentIdField;
@@ -20,6 +31,7 @@ public class TransactionDialog extends JDialog {
     private JComboBox<String> statusComboBox;
     private JTextArea descriptionArea;
 
+    // Data
     private boolean confirmed = false;
     private Transaction transaction;
     private boolean isEdit = false;
@@ -40,122 +52,263 @@ public class TransactionDialog extends JDialog {
     }
 
     private void initComponents() {
-        setSize(450, 650);
+        setSize(DIALOG_WIDTH, DIALOG_HEIGHT);
         setLocationRelativeTo(getOwner());
-        setLayout(new BorderLayout());
+        setLayout(new BorderLayout(0, 0));
+        getContentPane().setBackground(Color.WHITE);
 
-        JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
-        mainPanel.setBackground(Color.WHITE);
+        // Main content
+        JPanel mainPanel = createMainPanel();
+        JScrollPane scrollPane = new JScrollPane(mainPanel);
+        scrollPane.setBorder(null);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
 
-        // Fields
-        codeField = addFormField(mainPanel, "Mã giao dịch (*):", UIUtils.createStyledTextField(0));
-        studentIdField = addFormField(mainPanel, "ID Học viên (*):", UIUtils.createStyledTextField(0));
-        enrollmentIdField = addFormField(mainPanel, "ID Đăng ký (Enrollment ID):", UIUtils.createStyledTextField(0));
-        amountField = addFormField(mainPanel, "Số tiền (*):", UIUtils.createStyledTextField(0));
-
-        mainPanel.add(new JLabel("Loại giao dịch:"));
-        typeComboBox = new JComboBox<>(new String[] { "Học phí", "Phí ghi danh", "Giáo trình", "Hoàn tiền", "Khác" });
-        typeComboBox.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
-        mainPanel.add(typeComboBox);
-        mainPanel.add(Box.createVerticalStrut(15));
-
-        mainPanel.add(new JLabel("Phương thức:"));
-        methodComboBox = new JComboBox<>(new String[] { "Tiền mặt", "Chuyển khoản", "Thẻ tín dụng", "Ví điện tử" });
-        methodComboBox.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
-        mainPanel.add(methodComboBox);
-        mainPanel.add(Box.createVerticalStrut(15));
-
-        mainPanel.add(new JLabel("Trạng thái:"));
-        statusComboBox = new JComboBox<>(new String[] { "Thành công", "Đang chờ", "Thất bại", "Đã hoàn tiền" });
-        statusComboBox.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
-        mainPanel.add(statusComboBox);
-        mainPanel.add(Box.createVerticalStrut(15));
-
-        mainPanel.add(new JLabel("Mô tả:"));
-        descriptionArea = new JTextArea(3, 20);
-        descriptionArea.setLineWrap(true);
-        JScrollPane sp = new JScrollPane(descriptionArea);
-        sp.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));
-        mainPanel.add(sp);
-
-        // Buttons
-        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        btnPanel.setBackground(Color.WHITE);
-        JButton saveBtn = UIUtils.createSuccessButton("Lưu");
-        JButton cancelBtn = UIUtils.createDangerButton("Hủy");
-
-        saveBtn.addActionListener(e -> handleSave());
-        cancelBtn.addActionListener(e -> dispose());
-
-        btnPanel.add(saveBtn);
-        btnPanel.add(cancelBtn);
-
-        JScrollPane mainScroll = new JScrollPane(mainPanel);
-        mainScroll.setBorder(null);
-        add(mainScroll, BorderLayout.CENTER);
-        add(btnPanel, BorderLayout.SOUTH);
+        add(scrollPane, BorderLayout.CENTER);
+        add(createButtonPanel(), BorderLayout.SOUTH);
     }
 
-    private JTextField addFormField(JPanel panel, String labelText, JTextField field) {
-        panel.add(new JLabel(labelText));
-        panel.add(Box.createVerticalStrut(5));
-        field.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
-        panel.add(field);
-        panel.add(Box.createVerticalStrut(15));
+    private JPanel createMainPanel() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBackground(Color.WHITE);
+        panel.setBorder(new EmptyBorder(25, 30, 25, 30));
+
+        // Transaction Info Section
+        panel.add(createSection("Thông Tin Giao Dịch", createTransactionFields()));
+        panel.add(Box.createVerticalStrut(20));
+
+        // Payment Section
+        panel.add(createSection("Thanh Toán", createPaymentFields()));
+
+        return panel;
+    }
+
+    private JPanel createSection(String title, JPanel content) {
+        JPanel section = new JPanel(new BorderLayout(0, 12));
+        section.setMaximumSize(new Dimension(Integer.MAX_VALUE, content.getPreferredSize().height + 50));
+        section.setBackground(Color.WHITE);
+
+        JLabel lblTitle = new JLabel(title);
+        lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        lblTitle.setForeground(new Color(51, 51, 51));
+
+        section.add(lblTitle, BorderLayout.NORTH);
+        section.add(content, BorderLayout.CENTER);
+
+        return section;
+    }
+
+    private JPanel createTransactionFields() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBackground(SECTION_BG);
+        panel.setBorder(new EmptyBorder(15, 15, 15, 15));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(5, 5, 5, 5);
+
+        int row = 0;
+
+        // Transaction Code
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        gbc.weightx = 0.35;
+        panel.add(createLabel("Mã giao dịch"), gbc);
+        gbc.gridx = 1;
+        gbc.weightx = 0.65;
+        codeField = createStyledTextField();
+        panel.add(codeField, gbc);
+
+        // Student ID
+        row++;
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        gbc.weightx = 0.35;
+        panel.add(createLabel("ID Học viên"), gbc);
+        gbc.gridx = 1;
+        gbc.weightx = 0.65;
+        studentIdField = createStyledTextField();
+        panel.add(studentIdField, gbc);
+
+        // Enrollment ID
+        row++;
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        gbc.weightx = 0.35;
+        panel.add(createLabel("ID Đăng ký"), gbc);
+        gbc.gridx = 1;
+        gbc.weightx = 0.65;
+        enrollmentIdField = createStyledTextField();
+        enrollmentIdField.setToolTipText("Optional");
+        panel.add(enrollmentIdField, gbc);
+
+        // Description
+        row++;
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        gbc.weightx = 0.35;
+        gbc.anchor = GridBagConstraints.NORTHWEST;
+        panel.add(createLabel("Mô tả"), gbc);
+        gbc.gridx = 1;
+        gbc.weightx = 0.65;
+        gbc.anchor = GridBagConstraints.CENTER;
+        descriptionArea = new JTextArea(3, 20);
+        descriptionArea.setLineWrap(true);
+        descriptionArea.setWrapStyleWord(true);
+        descriptionArea.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        JScrollPane scrollDesc = new JScrollPane(descriptionArea);
+        scrollDesc.setPreferredSize(new Dimension(0, 70));
+        styleField(scrollDesc);
+        panel.add(scrollDesc, gbc);
+
+        return panel;
+    }
+
+    private JPanel createPaymentFields() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBackground(SECTION_BG);
+        panel.setBorder(new EmptyBorder(15, 15, 15, 15));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(5, 5, 5, 5);
+
+        int row = 0;
+
+        // Amount
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        gbc.weightx = 0.35;
+        panel.add(createLabel("Số tiền"), gbc);
+        gbc.gridx = 1;
+        gbc.weightx = 0.65;
+        amountField = createStyledTextField();
+        amountField.setToolTipText("VNĐ");
+        panel.add(amountField, gbc);
+
+        // Transaction Type
+        row++;
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        gbc.weightx = 0.35;
+        panel.add(createLabel("Loại giao dịch"), gbc);
+        gbc.gridx = 1;
+        gbc.weightx = 0.65;
+        typeComboBox = new JComboBox<>(new String[] { "Học phí", "Phí ghi danh", "Giáo trình", "Hoàn tiền", "Khác" });
+        styleField(typeComboBox);
+        panel.add(typeComboBox, gbc);
+
+        // Payment Method
+        row++;
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        gbc.weightx = 0.35;
+        panel.add(createLabel("Phương thức"), gbc);
+        gbc.gridx = 1;
+        gbc.weightx = 0.65;
+        methodComboBox = new JComboBox<>(new String[] { "Tiền mặt", "Chuyển khoản", "Thẻ tín dụng", "Ví điện tử" });
+        styleField(methodComboBox);
+        panel.add(methodComboBox, gbc);
+
+        // Status
+        row++;
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        gbc.weightx = 0.35;
+        panel.add(createLabel("Trạng thái"), gbc);
+        gbc.gridx = 1;
+        gbc.weightx = 0.65;
+        statusComboBox = new JComboBox<>(new String[] { "Thành công", "Đang chờ", "Thất bại", "Đã hoàn tiền" });
+        styleField(statusComboBox);
+        panel.add(statusComboBox, gbc);
+
+        return panel;
+    }
+
+    private JPanel createButtonPanel() {
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 15));
+        panel.setBackground(Color.WHITE);
+        panel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, new Color(230, 230, 230)));
+
+        JButton btnSave = UIUtils.createPrimaryButton("Lưu");
+        JButton btnCancel = new JButton("Hủy");
+
+        btnSave.setPreferredSize(new Dimension(100, 38));
+        btnCancel.setPreferredSize(new Dimension(100, 38));
+
+        btnSave.addActionListener(e -> handleSave());
+        btnCancel.addActionListener(e -> dispose());
+
+        panel.add(btnCancel);
+        panel.add(btnSave);
+
+        return panel;
+    }
+
+    // Helper methods
+    private JLabel createLabel(String text) {
+        JLabel label = new JLabel(text);
+        label.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        label.setForeground(new Color(70, 70, 70));
+        return label;
+    }
+
+    private JTextField createStyledTextField() {
+        JTextField field = new JTextField();
+        styleField(field);
         return field;
     }
 
-    private void loadData() {
-        codeField.setText(transaction.getTransactionCode());
-        studentIdField.setText(String.valueOf(transaction.getStudentId()));
-        enrollmentIdField
-                .setText(transaction.getEnrollmentId() != 0 ? String.valueOf(transaction.getEnrollmentId()) : "");
-        amountField.setText(transaction.getAmount().toString());
-        typeComboBox.setSelectedItem(transaction.getTransactionType());
-        methodComboBox.setSelectedItem(transaction.getPaymentMethod());
-        statusComboBox.setSelectedItem(transaction.getStatus());
-        descriptionArea.setText(transaction.getDescription());
+    private void styleField(JComponent field) {
+        field.setPreferredSize(new Dimension(0, FIELD_HEIGHT));
+        field.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        field.putClientProperty("FlatLaf.style", "arc: 8");
+    }
 
-        if (isEdit) {
-            codeField.setEditable(false);
-            studentIdField.setEditable(false);
+    private void loadData() {
+        if (transaction != null) {
+            codeField.setText(transaction.getTransactionCode());
+            studentIdField.setText(String.valueOf(transaction.getStudentId()));
+            enrollmentIdField.setText(String.valueOf(transaction.getEnrollmentId()));
+            amountField.setText(transaction.getAmount() != null ? transaction.getAmount().toString() : "");
+            descriptionArea.setText(transaction.getDescription());
+
+            if (transaction.getTransactionType() != null) {
+                typeComboBox.setSelectedItem(transaction.getTransactionType().getDisplayName());
+            }
+            if (transaction.getPaymentMethod() != null) {
+                methodComboBox.setSelectedItem(transaction.getPaymentMethod().getDisplayName());
+            }
+            if (transaction.getStatus() != null) {
+                statusComboBox.setSelectedItem(transaction.getStatus().getDisplayName());
+            }
         }
     }
 
     private void handleSave() {
         try {
-            String code = codeField.getText().trim();
-            String sId = studentIdField.getText().trim();
-            String eId = enrollmentIdField.getText().trim();
-            String amt = amountField.getText().trim();
+            transaction.setTransactionCode(codeField.getText().trim());
+            transaction.setStudentId(Integer.parseInt(studentIdField.getText().trim()));
 
-            if (code.isEmpty() || sId.isEmpty() || amt.isEmpty()) {
-                UIUtils.showError(this, "Vui lòng điền đầy đủ các trường bắt buộc (*)");
-                return;
+            String enrollmentText = enrollmentIdField.getText().trim();
+            if (!enrollmentText.isEmpty()) {
+                transaction.setEnrollmentId(Integer.parseInt(enrollmentText));
             }
 
-            transaction.setTransactionCode(code);
-            transaction.setStudentId(Integer.parseInt(sId));
-            if (!eId.isEmpty()) {
-                transaction.setEnrollmentId(Integer.parseInt(eId));
-            } else {
-                transaction.setEnrollmentId(0);
-            }
-            transaction.setAmount(new BigDecimal(amt));
+            transaction.setAmount(new BigDecimal(amountField.getText().trim()));
+            transaction.setDescription(descriptionArea.getText());
+
             String typeString = (String) typeComboBox.getSelectedItem();
-            transaction.setTransactionType(models.TransactionType.fromDisplayName(typeString));
+            transaction.setTransactionType(TransactionType.fromDisplayName(typeString));
+
             String methodString = (String) methodComboBox.getSelectedItem();
-            transaction.setPaymentMethod(models.PaymentMethod.fromDisplayName(methodString));
+            transaction.setPaymentMethod(PaymentMethod.fromDisplayName(methodString));
+
             String statusString = (String) statusComboBox.getSelectedItem();
-            transaction.setStatus(models.TransactionStatus.fromDisplayName(statusString));
-            transaction.setDescription(descriptionArea.getText().trim());
+            transaction.setStatus(TransactionStatus.fromDisplayName(statusString));
 
             confirmed = true;
             dispose();
-        } catch (NumberFormatException e) {
-            UIUtils.showError(this, "ID và Số tiền phải là số hợp lệ!");
         } catch (Exception e) {
             UIUtils.showError(this, "Lỗi: " + e.getMessage());
         }

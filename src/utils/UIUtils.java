@@ -27,6 +27,21 @@ public class UIUtils {
 
     public static final Color TEXT_PRIMARY = new Color(44, 62, 80);
     public static final Color TEXT_SECONDARY = new Color(127, 140, 141); // Concrete
+    public static final Color BORDER_COLOR = new Color(189, 195, 199); // Silver
+
+    // Spacing Scale
+    public static final int SPACING_XS = 5;
+    public static final int SPACING_SM = 10;
+    public static final int SPACING_MD = 15;
+    public static final int SPACING_LG = 20;
+    public static final int SPACING_XL = 30;
+    public static final int SPACING_2XL = 40;
+
+    // Border Radius
+    public static final int RADIUS_SM = 4;
+    public static final int RADIUS_MD = 6;
+    public static final int RADIUS_LG = 8;
+    public static final int RADIUS_XL = 12;
 
     // Fonts
     public static final Font HEADER_FONT = new Font("Segoe UI", Font.BOLD, 24);
@@ -131,5 +146,52 @@ public class UIUtils {
     public static boolean showConfirmation(Component parent, String message) {
         return JOptionPane.showConfirmDialog(parent, message, "Xác nhận",
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
+    }
+
+    public static void showWarning(Component parent, String message) {
+        JOptionPane.showMessageDialog(parent, message, "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+    }
+
+    public static void showInfo(Component parent, String message) {
+        JOptionPane.showMessageDialog(parent, message, "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    /**
+     * Create a panel with rounded border and shadow
+     */
+    public static JPanel createRoundedPanel(int arc) {
+        JPanel panel = new JPanel();
+        panel.setBackground(WHITE);
+        panel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(BORDER_COLOR, 1, true),
+                BorderFactory.createEmptyBorder(SPACING_LG, SPACING_LG, SPACING_LG, SPACING_LG)));
+        return panel;
+    }
+
+    /**
+     * Create an empty border with standard spacing
+     */
+    public static EmptyBorder createPadding(int spacing) {
+        return new EmptyBorder(spacing, spacing, spacing, spacing);
+    }
+
+    /**
+     * Create a label with secondary text styling
+     */
+    public static JLabel createSecondaryLabel(String text) {
+        JLabel label = new JLabel(text);
+        label.setFont(NORMAL_FONT);
+        label.setForeground(TEXT_SECONDARY);
+        return label;
+    }
+
+    /**
+     * Create a subheader label
+     */
+    public static JLabel createSubheaderLabel(String text) {
+        JLabel label = new JLabel(text);
+        label.setFont(SUBHEADER_FONT);
+        label.setForeground(TEXT_PRIMARY);
+        return label;
     }
 }

@@ -3,7 +3,7 @@ package repository.impl;
 import database.DatabaseConnection;
 import models.Student;
 import models.User;
-import models.UserRole;
+import utils.enums.UserRole;
 import repository.IStudentRepository;
 
 import java.sql.*;
@@ -120,9 +120,9 @@ public class StudentRepositoryImpl implements IStudentRepository {
         u.setEmail(rs.getString("u.email"));
         u.setPhone(rs.getString("u.phone"));
         u.setAddress(rs.getString("u.address"));
-        u.setGender(models.Gender.fromDisplayName(rs.getString("u.gender")));
+        u.setGender(utils.enums.Gender.fromDisplayName(rs.getString("u.gender")));
         u.setDateOfBirth(rs.getDate("u.date_of_birth"));
-        u.setStatus(models.UserStatus.fromDisplayName(rs.getString("u.status")));
+        u.setStatus(utils.enums.UserStatus.fromDisplayName(rs.getString("u.status")));
 
         s.setUser(u);
         return s;

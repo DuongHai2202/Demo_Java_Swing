@@ -9,8 +9,12 @@ import java.util.List;
 public class PostService {
     private IPostRepository postRepository;
 
+    public PostService(IPostRepository postRepository) {
+        this.postRepository = postRepository;
+    }
+
     public PostService() {
-        this.postRepository = new PostRepositoryImpl();
+        this(new PostRepositoryImpl());
     }
 
     public List<Post> getAllPosts() {

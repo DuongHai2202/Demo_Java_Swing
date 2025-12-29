@@ -1,4 +1,4 @@
-package models;
+package utils.enums;
 
 /**
  * Enum cho trạng thái người dùng
@@ -23,14 +23,14 @@ public enum UserStatus {
      */
     public static UserStatus fromDisplayName(String text) {
         if (text == null || text.trim().isEmpty()) {
-            return DANG_HOAT_DONG; // Default
+            return DANG_HOAT_DONG;
         }
         for (UserStatus status : UserStatus.values()) {
             if (status.displayName.equalsIgnoreCase(text)) {
                 return status;
             }
         }
-        return DANG_HOAT_DONG; // Default if not found
+        return DANG_HOAT_DONG;
     }
 
     @Override

@@ -2,7 +2,7 @@ package service;
 
 import models.Student;
 import models.User;
-import models.UserRole;
+import utils.enums.UserRole;
 import repository.IStudentRepository;
 import repository.IUserRepository;
 import repository.impl.StudentRepositoryImpl;
@@ -17,9 +17,13 @@ public class StudentService {
     private final IStudentRepository studentRepository;
     private final IUserRepository userRepository;
 
+    public StudentService(IStudentRepository studentRepository, IUserRepository userRepository) {
+        this.studentRepository = studentRepository;
+        this.userRepository = userRepository;
+    }
+
     public StudentService() {
-        this.studentRepository = new StudentRepositoryImpl();
-        this.userRepository = new UserRepositoryImpl();
+        this(new StudentRepositoryImpl(), new UserRepositoryImpl());
     }
 
     public List<Student> getStudentsPaginated(int page, int size) {

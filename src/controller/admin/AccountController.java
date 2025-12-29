@@ -1,7 +1,7 @@
 package controller.admin;
 
 import models.User;
-import models.UserRole;
+import utils.enums.UserRole;
 import service.UserService;
 import java.util.List;
 

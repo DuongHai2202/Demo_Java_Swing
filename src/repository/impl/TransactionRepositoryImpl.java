@@ -173,9 +173,9 @@ public class TransactionRepositoryImpl implements ITransactionRepository {
         transaction.setTransactionCode(rs.getString("transaction_code"));
         transaction.setAmount(rs.getBigDecimal("amount"));
         transaction.setTransactionDate(rs.getTimestamp("transaction_date"));
-        transaction.setTransactionType(models.TransactionType.fromDisplayName(rs.getString("transaction_type")));
-        transaction.setPaymentMethod(models.PaymentMethod.fromDisplayName(rs.getString("payment_method")));
-        transaction.setStatus(models.TransactionStatus.fromDisplayName(rs.getString("status")));
+        transaction.setTransactionType(utils.enums.TransactionType.fromDisplayName(rs.getString("transaction_type")));
+        transaction.setPaymentMethod(utils.enums.PaymentMethod.fromDisplayName(rs.getString("payment_method")));
+        transaction.setStatus(utils.enums.TransactionStatus.fromDisplayName(rs.getString("status")));
         transaction.setDescription(rs.getString("description"));
         transaction.setProcessedBy(rs.getInt("processed_by"));
 

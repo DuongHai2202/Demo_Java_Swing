@@ -14,8 +14,12 @@ import java.util.Map;
 public class TransactionService {
     private final ITransactionRepository transactionRepository;
 
+    public TransactionService(ITransactionRepository transactionRepository) {
+        this.transactionRepository = transactionRepository;
+    }
+
     public TransactionService() {
-        this.transactionRepository = new TransactionRepositoryImpl();
+        this(new TransactionRepositoryImpl());
     }
 
     /**

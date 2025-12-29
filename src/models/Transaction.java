@@ -1,5 +1,9 @@
 package models;
 
+import utils.enums.PaymentMethod;
+import utils.enums.TransactionStatus;
+import utils.enums.TransactionType;
+
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 

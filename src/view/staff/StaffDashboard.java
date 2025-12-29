@@ -20,6 +20,8 @@ public class StaffDashboard extends JFrame {
     // Panels
     private StaffSupportPanel supportPanel;
     private StaffPostPanel postPanel;
+    private view.staff.panels.StaffSchedulePanel schedulePanel;
+    private view.staff.panels.StaffDocumentPanel documentPanel;
 
     public StaffDashboard(User user) {
         this.currentUser = user;
@@ -86,10 +88,10 @@ public class StaffDashboard extends JFrame {
 
         sidebar.add(Box.createVerticalStrut(20));
         addMenuItem(sidebar, "Trang Chủ", e -> showDashboardHome());
-        addMenuItem(sidebar, "CSKH", e -> switchContent("CSKH"));
-        addMenuItem(sidebar, "Hỗ Trợ GV", e -> switchContent("Hỗ Trợ GV"));
+        addMenuItem(sidebar, "Lịch & Điểm Danh", e -> switchContent("Lịch & Điểm Danh"));
+        addMenuItem(sidebar, "Tài Liệu", e -> switchContent("Tài Liệu"));
         addMenuItem(sidebar, "Quản Lí Bài Viết", e -> switchContent("Quản Lí Bài Viết"));
-        addMenuItem(sidebar, "Quản Lí Tài Khoản", e -> switchContent("Quản Lí Tài Khoản"));
+        addMenuItem(sidebar, "CSKH", e -> switchContent("CSKH"));
 
         sidebar.add(Box.createVerticalGlue());
 
@@ -129,20 +131,82 @@ public class StaffDashboard extends JFrame {
         homePanel.setLayout(new BoxLayout(homePanel, BoxLayout.Y_AXIS));
         homePanel.setBackground(UIUtils.LIGHT_BG);
 
+        // Welcome Card
+        JPanel welcomeCard = UIUtils.createCardPanel();
+        welcomeCard.setLayout(new BorderLayout(UIUtils.SPACING_MD, UIUtils.SPACING_MD));
+        welcomeCard.setMaximumSize(new Dimension(Integer.MAX_VALUE, 120));
+
         JLabel welcomeLabel = UIUtils.createHeaderLabel("Chào mừng, " + currentUser.getFullName() + "!");
-        homePanel.add(welcomeLabel);
+        JLabel subtitle = UIUtils.createSecondaryLabel("Hệ thống nhân viên ODIN Language Center");
+
+        JPanel textPanel = new JPanel();
+        textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
+        textPanel.setOpaque(false);
+        textPanel.add(welcomeLabel);
+        textPanel.add(Box.createVerticalStrut(UIUtils.SPACING_SM));
+        textPanel.add(subtitle);
+
+        welcomeCard.add(textPanel, BorderLayout.CENTER);
+
+        homePanel.add(welcomeCard);
+        homePanel.add(Box.createVerticalStrut(UIUtils.SPACING_LG));
+
+        // Quick Stats Cards
+        JPanel statsPanel = new JPanel(new GridLayout(1, 3, UIUtils.SPACING_MD, 0));
+        statsPanel.setOpaque(false);
+        statsPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
+
+        statsPanel.add(createStatCard("Hỗ Trợ", "12", UIUtils.WARNING_COLOR));
+        statsPanel.add(createStatCard("Lịch Học", "8", UIUtils.PRIMARY_COLOR));
+        statsPanel.add(createStatCard("Bài Đăng", "5", UIUtils.ACCENT_COLOR));
+
+        homePanel.add(statsPanel);
+        homePanel.add(Box.createVerticalGlue());
 
         contentPanel.add(homePanel, BorderLayout.CENTER);
         contentPanel.revalidate();
         contentPanel.repaint();
     }
 
+    private JPanel createStatCard(String title, String value, Color color) {
+        JPanel card = UIUtils.createCardPanel();
+        card.setLayout(new BorderLayout());
+
+        JLabel lblValue = new JLabel(value);
+        lblValue.setFont(new Font("Segoe UI", Font.BOLD, 32));
+        lblValue.setForeground(color);
+        lblValue.setHorizontalAlignment(SwingConstants.CENTER);
+
+        JLabel lblTitle = new JLabel(title);
+        lblTitle.setFont(UIUtils.NORMAL_FONT);
+        lblTitle.setForeground(UIUtils.TEXT_SECONDARY);
+        lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
+
+        card.add(lblValue, BorderLayout.CENTER);
+        card.add(lblTitle, BorderLayout.SOUTH);
+
+        return card;
+    }
+
     private void switchContent(String title) {
         contentPanel.removeAll();
 
         switch (title) {
+            case "Lịch & Điểm Danh":
+                if (schedulePanel == null) {
+                    schedulePanel = new view.staff.panels.StaffSchedulePanel(staffController);
+                }
+                contentPanel.add(schedulePanel, BorderLayout.CENTER);
+                break;
+
+            case "Tài Liệu":
+                if (documentPanel == null) {
+                    documentPanel = new view.staff.panels.StaffDocumentPanel(staffController);
+                }
+                contentPanel.add(documentPanel, BorderLayout.CENTER);
+                break;
+
             case "CSKH":
-            case "Hỗ Trợ GV": // Combine both into Support Panel for now
                 if (supportPanel == null) {
                     supportPanel = new StaffSupportPanel(staffController);
                 }

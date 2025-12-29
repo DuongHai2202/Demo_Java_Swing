@@ -184,7 +184,7 @@ public class StaffPostPanel extends JPanel {
             p.setCategory((String) cbCategory.getSelectedItem());
             p.setContent(txtContent.getText());
             String statusString = (String) cbStatus.getSelectedItem();
-            p.setStatus(models.PostStatus.fromDisplayName(statusString));
+            p.setStatus(utils.enums.PostStatus.fromDisplayName(statusString));
 
             boolean success;
             if (post == null) {

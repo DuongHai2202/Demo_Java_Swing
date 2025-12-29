@@ -1,11 +1,14 @@
 package controller;
 
 import models.User;
-import models.UserRole;
+import utils.enums.UserRole;
 import service.UserService;
 import utils.UIUtils;
+import view.LoginFrame;
 import view.admin.AdminDashboard;
 import view.staff.StaffDashboard;
+import view.student.StudentDashboard;
+import view.teacher.TeacherDashboard;
 
 import javax.swing.*;
 
@@ -47,11 +50,15 @@ public class AuthController {
 
         if (role == UserRole.QUAN_TRI_VIEN) {
             new AdminDashboard(user).setVisible(true);
-        } else if (role == UserRole.NHAN_VIEN || role == UserRole.GIANG_VIEN) {
+        } else if (role == UserRole.NHAN_VIEN) {
             new StaffDashboard(user).setVisible(true);
+        } else if (role == UserRole.GIANG_VIEN) {
+            new TeacherDashboard(user).setVisible(true);
+        } else if (role == UserRole.HOC_VIEN) {
+            new StudentDashboard(user).setVisible(true);
         } else {
             JOptionPane.showMessageDialog(null,
-                    "Chức năng dành cho học viên đang phát triển",
+                    "Vai trò người dùng không xác định",
                     "Thông báo",
                     JOptionPane.INFORMATION_MESSAGE);
         }
@@ -64,19 +71,19 @@ public class AuthController {
         switch (role.toLowerCase()) {
             case "admin":
                 usernameField.setText("admin");
-                passwordField.setText("123");
+                passwordField.setText("123456");
                 break;
             case "staff":
                 usernameField.setText("staff1");
-                passwordField.setText("123");
+                passwordField.setText("123456");
                 break;
             case "teacher":
                 usernameField.setText("teacher1");
-                passwordField.setText("123");
+                passwordField.setText("123456");
                 break;
             case "student":
                 usernameField.setText("student1");
-                passwordField.setText("123");
+                passwordField.setText("123456");
                 break;
         }
     }

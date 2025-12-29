@@ -1,7 +1,7 @@
 package controller.admin;
 
 import models.Transaction;
-import models.UserRole;
+import utils.enums.UserRole;
 import service.CourseService;
 import service.TransactionService;
 import service.UserService;

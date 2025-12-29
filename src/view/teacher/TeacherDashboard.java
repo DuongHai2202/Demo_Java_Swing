@@ -3,9 +3,14 @@ package view.teacher;
 import models.User;
 import view.LoginFrame;
 import utils.UIUtils;
+import controller.teacher.TeacherController;
+import view.teacher.panels.MyClassesPanel;
+import view.teacher.panels.SchedulePanel;
+import view.teacher.panels.AttendancePanel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Map;
 
 /**
  * Teacher Dashboard - Giao diện giảng viên
@@ -14,9 +19,16 @@ import java.awt.*;
 public class TeacherDashboard extends JFrame {
     private User currentUser;
     private JPanel contentPanel;
+    private TeacherController controller;
+
+    // Panels
+    private MyClassesPanel classesPanel;
+    private SchedulePanel schedulePanel;
+    private AttendancePanel attendancePanel;
 
     public TeacherDashboard(User user) {
         this.currentUser = user;
+        this.controller = new TeacherController(user);
         initComponents();
     }
 
@@ -79,8 +91,9 @@ public class TeacherDashboard extends JFrame {
 
         sidebar.add(Box.createVerticalStrut(10));
         addMenuItem(sidebar, "Trang Chủ", e -> showDashboardHome());
-        addMenuItem(sidebar, "Quản Lí Lớp", e -> switchContent("Quản Lí Lớp Học"));
-        addMenuItem(sidebar, "Quản Lí Khóa Học", e -> switchContent("Quản Lí Khóa Học"));
+        addMenuItem(sidebar, "Lớp Của Tôi", e -> showMyClasses());
+        addMenuItem(sidebar, "Lịch Dạy", e -> showSchedule());
+        addMenuItem(sidebar, "Điểm Danh", e -> showAttendance());
 
         sidebar.add(Box.createVerticalGlue());
 
@@ -120,17 +133,109 @@ public class TeacherDashboard extends JFrame {
         homePanel.setLayout(new BoxLayout(homePanel, BoxLayout.Y_AXIS));
         homePanel.setBackground(UIUtils.LIGHT_BG);
 
+        // Welcome Card
+        JPanel welcomeCard = UIUtils.createCardPanel();
+        welcomeCard.setLayout(new BorderLayout(UIUtils.SPACING_MD, UIUtils.SPACING_MD));
+        welcomeCard.setMaximumSize(new Dimension(Integer.MAX_VALUE, 120));
+
         JLabel welcomeLabel = UIUtils.createHeaderLabel("Chào mừng, " + currentUser.getFullName() + "!");
-        homePanel.add(welcomeLabel);
+        JLabel subtitle = UIUtils.createSecondaryLabel("Hệ thống quản lý giảng viên ODIN Language Center");
+
+        JPanel textPanel = new JPanel();
+        textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
+        textPanel.setOpaque(false);
+        textPanel.add(welcomeLabel);
+        textPanel.add(Box.createVerticalStrut(UIUtils.SPACING_SM));
+        textPanel.add(subtitle);
+
+        welcomeCard.add(textPanel, BorderLayout.CENTER);
+
+        homePanel.add(welcomeCard);
+        homePanel.add(Box.createVerticalStrut(UIUtils.SPACING_LG));
+
+        // Quick Stats Cards
+        JPanel statsPanel = new JPanel(new GridLayout(1, 3, UIUtils.SPACING_MD, 0));
+        statsPanel.setOpaque(false);
+        statsPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
+
+        // Get real stats from controller
+        Map<String, Integer> stats = controller.getTeachingStats();
+
+        statsPanel.add(createStatCard("Lớp Học", String.valueOf(stats.get("CLASSES")), UIUtils.PRIMARY_COLOR));
+        statsPanel.add(createStatCard("Học Viên", String.valueOf(stats.get("STUDENTS")), UIUtils.ACCENT_COLOR));
+        statsPanel.add(createStatCard("Buổi Học", String.valueOf(stats.get("SESSIONS")), UIUtils.SECONDARY_COLOR));
+
+        homePanel.add(statsPanel);
+        homePanel.add(Box.createVerticalGlue());
 
         contentPanel.add(homePanel, BorderLayout.CENTER);
         contentPanel.revalidate();
         contentPanel.repaint();
     }
 
+    private JPanel createStatCard(String title, String value, Color color) {
+        JPanel card = UIUtils.createCardPanel();
+        card.setLayout(new BorderLayout());
+
+        JLabel lblValue = new JLabel(value);
+        lblValue.setFont(new Font("Segoe UI", Font.BOLD, 32));
+        lblValue.setForeground(color);
+        lblValue.setHorizontalAlignment(SwingConstants.CENTER);
+
+        JLabel lblTitle = new JLabel(title);
+        lblTitle.setFont(UIUtils.NORMAL_FONT);
+        lblTitle.setForeground(UIUtils.TEXT_SECONDARY);
+        lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
+
+        card.add(lblValue, BorderLayout.CENTER);
+        card.add(lblTitle, BorderLayout.SOUTH);
+
+        return card;
+    }
+
+    private void showMyClasses() {
+        contentPanel.removeAll();
+
+        if (classesPanel == null) {
+            classesPanel = new MyClassesPanel(controller);
+        }
+
+        contentPanel.add(classesPanel, BorderLayout.CENTER);
+        contentPanel.revalidate();
+        contentPanel.repaint();
+    }
+
+    private void showSchedule() {
+        contentPanel.removeAll();
+
+        if (schedulePanel == null) {
+            schedulePanel = new SchedulePanel(controller);
+        }
+
+        contentPanel.add(schedulePanel, BorderLayout.CENTER);
+        contentPanel.revalidate();
+        contentPanel.repaint();
+    }
+
+    private void showAttendance() {
+        contentPanel.removeAll();
+
+        if (attendancePanel == null) {
+            attendancePanel = new AttendancePanel(controller);
+        }
+
+        contentPanel.add(attendancePanel, BorderLayout.CENTER);
+        contentPanel.revalidate();
+        contentPanel.repaint();
+    }
+
     private void switchContent(String title) {
         contentPanel.removeAll();
-        contentPanel.add(new JLabel("Đang phát triển: " + title));
+
+        JLabel label = new JLabel("Chức năng: " + title);
+        label.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        contentPanel.add(label, BorderLayout.CENTER);
+
         contentPanel.revalidate();
         contentPanel.repaint();
     }

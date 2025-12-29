@@ -2,7 +2,7 @@ package repository.impl;
 
 import database.DatabaseConnection;
 import models.Course;
-import models.CourseStatus;
+import utils.enums.CourseStatus;
 import repository.ICourseRepository;
 
 import java.sql.*;

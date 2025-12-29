@@ -1,5 +1,9 @@
 package models;
 
+import utils.enums.Gender;
+import utils.enums.UserRole;
+import utils.enums.UserStatus;
+
 import java.sql.Date;
 import java.sql.Timestamp;
 

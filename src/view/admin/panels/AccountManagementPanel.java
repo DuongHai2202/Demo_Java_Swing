@@ -178,7 +178,7 @@ public class AccountManagementPanel extends JPanel {
                 int id = (int) model.getValueAt(row, 0);
                 User user = allUsers.stream().filter(u -> u.getId() == id).findFirst().orElse(null);
                 if (user != null) {
-                    models.UserStatus currentStatus = user.getStatus();
+                    utils.enums.UserStatus currentStatus = user.getStatus();
                     String currentStatusDisplay = currentStatus != null ? currentStatus.getDisplayName()
                             : "Đang hoạt động";
                     String newStatusDisplay = "Đang hoạt động".equals(currentStatusDisplay) ? "Ngừng hoạt động"
@@ -186,7 +186,7 @@ public class AccountManagementPanel extends JPanel {
                     String msg = "Đang hoạt động".equals(newStatusDisplay) ? "Mở khóa tài khoản này?"
                             : "Khóa tài khoản này?";
                     if (UIUtils.showConfirmation(parentFrame, msg)) {
-                        models.UserStatus newStatus = models.UserStatus.fromDisplayName(newStatusDisplay);
+                        utils.enums.UserStatus newStatus = utils.enums.UserStatus.fromDisplayName(newStatusDisplay);
                         user.setStatus(newStatus);
                         if (accountController.updateAccount(user)) {
                             UIUtils.showSuccess(parentFrame, "Cập nhật trạng thái thành công");
@@ -224,7 +224,7 @@ public class AccountManagementPanel extends JPanel {
                 totalPages = 1;
             allUsers = accountController.getUsersByPage(currentPage, pageSize);
         } else {
-            models.UserRole userRole = models.UserRole.fromDisplayName(role);
+            utils.enums.UserRole userRole = utils.enums.UserRole.fromDisplayName(role);
             int total = accountController.getTotalUsersByRoleCount(userRole);
             totalPages = (int) Math.ceil((double) total / pageSize);
             if (totalPages == 0)

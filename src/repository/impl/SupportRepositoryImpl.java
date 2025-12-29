@@ -93,7 +93,7 @@ public class SupportRepositoryImpl implements ISupportRepository {
         req.setRequesterPhone(rs.getString("requester_phone"));
         req.setSubject(rs.getString("subject"));
         req.setMessage(rs.getString("message"));
-        req.setStatus(models.SupportStatus.fromDisplayName(rs.getString("status")));
+        req.setStatus(utils.enums.SupportStatus.fromDisplayName(rs.getString("status")));
         int assignedTo = rs.getInt("assigned_to");
         req.setAssignedTo(rs.wasNull() ? null : assignedTo);
 

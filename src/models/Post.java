@@ -1,5 +1,7 @@
 package models;
 
+import utils.enums.PostStatus;
+
 import java.time.LocalDateTime;
 
 /**

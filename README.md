@@ -149,10 +149,10 @@ private static final String PASSWORD = "your_password";
 
 | Role | Username | Password | Mô Tả |
 |------|----------|----------|-------|
-| Admin | `admin` | `123` | Quản trị viên - Full access |
-| Staff | `staff1` | `123` | Nhân viên - Quản lý posts & support |
-| Teacher | `teacher1` | `123` | Giảng viên - Xem thông tin |
-| Student | `student1` | `123` | Học viên - Xem thông tin cá nhân |
+| Admin | `admin` | `123456` | Quản trị viên - Full access |
+| Staff | `staff1` | `123456` | Nhân viên - Quản lý posts & support |
+| Teacher | `teacher1` | `123456` | Giảng viên - Xem thông tin |
+| Student | `student1` | `123456` | Học viên - Xem thông tin cá nhân |
 
 ### Quick Start
 1. Chạy ứng dụng

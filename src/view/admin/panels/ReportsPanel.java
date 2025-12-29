@@ -3,11 +3,15 @@ package view.admin.panels;
 import controller.admin.ReportingController;
 import view.components.LineChartPanel;
 import models.Transaction;
+import utils.UIUtils;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.Locale;
 import java.util.Map;
@@ -32,10 +36,50 @@ public class ReportsPanel extends JPanel {
                 JPanel container = new JPanel();
                 container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
                 container.setOpaque(false);
-                container.setBorder(new EmptyBorder(25, 25, 25, 25));
+                container.setBorder(new EmptyBorder(UIUtils.SPACING_XL, UIUtils.SPACING_XL, UIUtils.SPACING_XL,
+                                UIUtils.SPACING_XL));
 
-                // 1. Metric Cards Header (Refined & Smaller)
-                JPanel metricsPanel = new JPanel(new GridLayout(1, 4, 15, 0));
+                // Header with Title and Controls
+                JPanel headerPanel = new JPanel(new BorderLayout());
+                headerPanel.setOpaque(false);
+                headerPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
+
+                JLabel titleLabel = UIUtils.createHeaderLabel("Báo Cáo & Thống Kê");
+                headerPanel.add(titleLabel, BorderLayout.WEST);
+
+                // Filter and Export Controls
+                JPanel controlsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, UIUtils.SPACING_SM, 0));
+                controlsPanel.setOpaque(false);
+
+                JComboBox<String> dateFilter = new JComboBox<>(new String[] {
+                                "7 ngày qua", "30 ngày qua", "3 tháng qua", "Năm nay"
+                });
+                dateFilter.putClientProperty("JComponent.roundRect", true);
+
+                JComboBox<String> typeFilter = new JComboBox<>(new String[] {
+                                "Tất cả", "Học phí", "Đăng ký", "Hoàn tiền"
+                });
+                typeFilter.putClientProperty("JComponent.roundRect", true);
+
+                JButton btnRefresh = UIUtils.createPrimaryButton("🔄 Làm mới");
+                JButton btnExport = UIUtils.createSuccessButton("📊 Xuất CSV");
+                btnExport.addActionListener(e -> exportToCSV());
+
+                controlsPanel.add(new JLabel("Thời gian:"));
+                controlsPanel.add(dateFilter);
+                controlsPanel.add(Box.createHorizontalStrut(UIUtils.SPACING_SM));
+                controlsPanel.add(new JLabel("Loại:"));
+                controlsPanel.add(typeFilter);
+                controlsPanel.add(Box.createHorizontalStrut(UIUtils.SPACING_SM));
+                controlsPanel.add(btnRefresh);
+                controlsPanel.add(btnExport);
+
+                headerPanel.add(controlsPanel, BorderLayout.EAST);
+                container.add(headerPanel);
+                container.add(Box.createVerticalStrut(UIUtils.SPACING_LG));
+
+                // Metric Cards
+                JPanel metricsPanel = new JPanel(new GridLayout(1, 4, UIUtils.SPACING_MD, 0));
                 metricsPanel.setOpaque(false);
                 metricsPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
 
@@ -44,32 +88,32 @@ public class ReportsPanel extends JPanel {
                 lblTotalStaff = new JLabel("--");
                 lblTotalRevenue = new JLabel("--");
 
-                metricsPanel.add(createMetricCard("HỌC VIÊN", lblTotalStudents, new Color(37, 99, 235)));
-                metricsPanel.add(createMetricCard("GIÁO VIÊN", lblTotalTeachers, new Color(14, 165, 233)));
-                metricsPanel.add(createMetricCard("NHÂN VIÊN", lblTotalStaff, new Color(99, 102, 241)));
-                metricsPanel.add(createMetricCard("DOANH THU", lblTotalRevenue, new Color(2, 132, 199)));
+                metricsPanel.add(createMetricCard("HỌC VIÊN", lblTotalStudents, UIUtils.PRIMARY_COLOR));
+                metricsPanel.add(createMetricCard("GIÁO VIÊN", lblTotalTeachers, UIUtils.ACCENT_COLOR));
+                metricsPanel.add(createMetricCard("NHÂN VIÊN", lblTotalStaff, UIUtils.SECONDARY_COLOR));
+                metricsPanel.add(createMetricCard("DOANH THU", lblTotalRevenue, UIUtils.WARNING_COLOR));
 
                 container.add(metricsPanel);
-                container.add(Box.createVerticalStrut(25));
+                container.add(Box.createVerticalStrut(UIUtils.SPACING_LG));
 
-                // 2. Middle Tier: Line Chart (Trends)
+                // Line Chart
                 trendChart = new LineChartPanel("Xu Hướng Doanh Thu", new java.util.TreeMap<>());
                 JPanel trendWrapper = wrapInCard(trendChart);
                 trendWrapper.setMaximumSize(new Dimension(Integer.MAX_VALUE, 350));
                 container.add(trendWrapper);
-                container.add(Box.createVerticalStrut(25));
+                container.add(Box.createVerticalStrut(UIUtils.SPACING_LG));
 
-                // 3. Bottom Tier: Recent Activities
+                // Recent Transactions Table
                 JPanel bottomPanel = new JPanel(new BorderLayout());
                 bottomPanel.setBackground(Color.WHITE);
                 bottomPanel.setBorder(BorderFactory.createCompoundBorder(
-                                BorderFactory.createLineBorder(new Color(230, 230, 230), 1),
-                                new EmptyBorder(15, 15, 15, 15)));
-                bottomPanel.putClientProperty("FlatLaf.style", "arc: 12");
+                                BorderFactory.createLineBorder(UIUtils.BORDER_COLOR, 1),
+                                new EmptyBorder(UIUtils.SPACING_MD, UIUtils.SPACING_MD, UIUtils.SPACING_MD,
+                                                UIUtils.SPACING_MD)));
+                bottomPanel.putClientProperty("FlatLaf.style", "arc: 8");
 
-                JLabel lblActTitle = new JLabel("GIAO DỊCH GẦN ĐÂY");
-                lblActTitle.setFont(new Font("Segoe UI", Font.BOLD, 15));
-                lblActTitle.setBorder(new EmptyBorder(0, 0, 10, 0));
+                JLabel lblActTitle = UIUtils.createSubheaderLabel("GIAO DỊCH GẦN ĐÂY");
+                lblActTitle.setBorder(new EmptyBorder(0, 0, UIUtils.SPACING_SM, 0));
                 bottomPanel.add(lblActTitle, BorderLayout.NORTH);
 
                 String[] cols = { "Mã GD", "Học viên", "Số tiền", "Loại", "Ngày" };
@@ -82,9 +126,9 @@ public class ReportsPanel extends JPanel {
                 tableActivities = new JTable(tableModel);
                 tableActivities.setRowHeight(35);
                 tableActivities.setShowGrid(false);
-                tableActivities.setIntercellSpacing(new Dimension(0, 0));
+                tableActivities.setFont(UIUtils.NORMAL_FONT);
                 tableActivities.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 12));
-                tableActivities.getTableHeader().setBackground(new Color(248, 250, 252));
+                tableActivities.getTableHeader().setBackground(UIUtils.LIGHT_BG);
 
                 JScrollPane tableScroll = new JScrollPane(tableActivities);
                 tableScroll.setPreferredSize(new Dimension(Integer.MAX_VALUE, 300));
@@ -102,7 +146,7 @@ public class ReportsPanel extends JPanel {
                 add(mainScroll, BorderLayout.CENTER);
 
                 refreshData();
-                refreshTimer = new Timer(5000, e -> refreshData());
+                refreshTimer = new Timer(10000, e -> refreshData()); // 10 seconds
                 refreshTimer.start();
         }
 
@@ -184,5 +228,36 @@ public class ReportsPanel extends JPanel {
                 card.add(panel, BorderLayout.CENTER);
                 card.putClientProperty("FlatLaf.style", "arc: 12");
                 return card;
+        }
+
+        private void exportToCSV() {
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setDialogTitle("Xuất báo cáo CSV");
+                fileChooser.setSelectedFile(new File("bao_cao_" + System.currentTimeMillis() + ".csv"));
+
+                int userSelection = fileChooser.showSaveDialog(this);
+                if (userSelection == JFileChooser.APPROVE_OPTION) {
+                        File fileToSave = fileChooser.getSelectedFile();
+
+                        try (FileWriter writer = new FileWriter(fileToSave)) {
+                                // Write header
+                                writer.write("Mã GD,Học viên,Số tiền,Loại,Ngày\n");
+
+                                // Write data
+                                for (int i = 0; i < tableModel.getRowCount(); i++) {
+                                        for (int j = 0; j < tableModel.getColumnCount(); j++) {
+                                                writer.write(String.valueOf(tableModel.getValueAt(i, j)));
+                                                if (j < tableModel.getColumnCount() - 1) {
+                                                        writer.write(",");
+                                                }
+                                        }
+                                        writer.write("\n");
+                                }
+
+                                UIUtils.showSuccess(this, "Đã xuất báo cáo thành công!");
+                        } catch (IOException ex) {
+                                UIUtils.showError(this, "Lỗi khi xuất file: " + ex.getMessage());
+                        }
+                }
         }
 }

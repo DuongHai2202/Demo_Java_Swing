@@ -1,4 +1,4 @@
-package models;
+package utils.enums;
 
 /**
  * Enum cho trạng thái giao dịch
@@ -24,14 +24,14 @@ public enum TransactionStatus {
      */
     public static TransactionStatus fromDisplayName(String text) {
         if (text == null || text.trim().isEmpty()) {
-            return DANG_CHO; // Default
+            return DANG_CHO;
         }
         for (TransactionStatus status : TransactionStatus.values()) {
             if (status.displayName.equalsIgnoreCase(text)) {
                 return status;
             }
         }
-        return DANG_CHO; // Default if not found
+        return DANG_CHO;
     }
 
     @Override

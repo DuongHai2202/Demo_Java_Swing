@@ -2,7 +2,7 @@ package repository.impl;
 
 import database.DatabaseConnection;
 import models.User;
-import models.UserRole;
+import utils.enums.UserRole;
 import repository.IUserRepository;
 
 import java.sql.*;
@@ -258,9 +258,9 @@ public class UserRepositoryImpl implements IUserRepository {
         user.setEmail(rs.getString("email"));
         user.setPhone(rs.getString("phone"));
         user.setAddress(rs.getString("address"));
-        user.setGender(models.Gender.fromDisplayName(rs.getString("gender")));
+        user.setGender(utils.enums.Gender.fromDisplayName(rs.getString("gender")));
         user.setDateOfBirth(rs.getDate("date_of_birth"));
-        user.setStatus(models.UserStatus.fromDisplayName(rs.getString("status")));
+        user.setStatus(utils.enums.UserStatus.fromDisplayName(rs.getString("status")));
         user.setCreatedAt(rs.getTimestamp("created_at"));
         user.setUpdatedAt(rs.getTimestamp("updated_at"));
         return user;

@@ -1,12 +1,13 @@
-package models;
+package utils.enums;
 
 /**
  * Enum cho trạng thái thanh toán
  */
 public enum PaymentStatus {
     CHUA_THANH_TOAN("Chưa thanh toán"),
+    DA_THANH_TOAN("Đã thanh toán"),
     THANH_TOAN_MOT_PHAN("Thanh toán một phần"),
-    DA_THANH_TOAN("Đã thanh toán");
+    QUA_HAN("Quá hạn");
 
     private final String displayName;
 
@@ -18,19 +19,16 @@ public enum PaymentStatus {
         return displayName;
     }
 
-    /**
-     * Lấy PaymentStatus từ tên hiển thị (dùng khi đọc từ Database)
-     */
     public static PaymentStatus fromDisplayName(String text) {
         if (text == null || text.trim().isEmpty()) {
-            return CHUA_THANH_TOAN; // Default
+            return CHUA_THANH_TOAN;
         }
         for (PaymentStatus status : PaymentStatus.values()) {
             if (status.displayName.equalsIgnoreCase(text)) {
                 return status;
             }
         }
-        return CHUA_THANH_TOAN; // Default if not found
+        return CHUA_THANH_TOAN;
     }
 
     @Override

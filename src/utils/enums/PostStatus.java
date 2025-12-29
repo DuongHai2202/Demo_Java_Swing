@@ -1,4 +1,4 @@
-package models;
+package utils.enums;
 
 /**
  * Enum cho trạng thái bài viết
@@ -18,19 +18,16 @@ public enum PostStatus {
         return displayName;
     }
 
-    /**
-     * Lấy PostStatus từ tên hiển thị (dùng khi đọc từ Database)
-     */
     public static PostStatus fromDisplayName(String text) {
         if (text == null || text.trim().isEmpty()) {
-            return BAN_NHAP; // Default
+            return BAN_NHAP;
         }
         for (PostStatus status : PostStatus.values()) {
             if (status.displayName.equalsIgnoreCase(text)) {
                 return status;
             }
         }
-        return BAN_NHAP; // Default if not found
+        return BAN_NHAP;
     }
 
     @Override

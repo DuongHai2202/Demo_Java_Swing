@@ -57,6 +57,59 @@ CREATE TABLE tbl_teachers (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ================================================
+-- TABLE: tbl_schedules (Bảng lịch học)
+-- ================================================
+CREATE TABLE tbl_schedules (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    class_id INT,
+    teacher_id INT,
+    schedule_date DATE NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    room VARCHAR(50),
+    status VARCHAR(50) DEFAULT 'Đã lên lịch',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (teacher_id) REFERENCES tbl_users(id) ON DELETE SET NULL,
+    INDEX idx_schedule_date (schedule_date),
+    INDEX idx_teacher_id (teacher_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ================================================
+-- TABLE: tbl_attendance (Bảng điểm danh)
+-- ================================================
+CREATE TABLE tbl_attendance (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    schedule_id INT NOT NULL,
+    student_id INT NOT NULL,
+    status VARCHAR(50) DEFAULT 'Có mặt',
+    note TEXT,
+    recorded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (schedule_id) REFERENCES tbl_schedules(id) ON DELETE CASCADE,
+    FOREIGN KEY (student_id) REFERENCES tbl_students(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_attendance (schedule_id, student_id),
+    INDEX idx_schedule_id (schedule_id),
+    INDEX idx_student_id (student_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ================================================
+-- TABLE: tbl_documents (Bảng tài liệu)
+-- ================================================
+CREATE TABLE tbl_documents (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    file_path VARCHAR(500) NOT NULL,
+    file_type VARCHAR(50),
+    file_size BIGINT,
+    category VARCHAR(50),
+    uploaded_by INT NOT NULL,
+    uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (uploaded_by) REFERENCES tbl_users(id) ON DELETE CASCADE,
+    INDEX idx_category (category),
+    INDEX idx_uploaded_by (uploaded_by)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ================================================
 -- TABLE: tbl_staff (Bảng nhân viên)
 -- ================================================
 CREATE TABLE tbl_staff (
@@ -96,7 +149,7 @@ CREATE TABLE tbl_classes (
     teacher_id INT,
     class_code VARCHAR(20) UNIQUE,
     class_name VARCHAR(100) NOT NULL,
-    schedule VARCHAR(100),
+    `schedule` VARCHAR(100),
     start_date DATE,
     end_date DATE,
     max_students INT DEFAULT 30,
@@ -104,7 +157,7 @@ CREATE TABLE tbl_classes (
     status ENUM('Sắp mở', 'Đang mở lớp', 'Đã kết thúc', 'Đã hủy') DEFAULT 'Sắp mở',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (course_id) REFERENCES tbl_courses(id) ON DELETE CASCADE,
-    FOREIGN KEY (teacher_id) REFERENCES tbl_teachers(id) ON DELETE SET NULL,
+    FOREIGN KEY (teacher_id) REFERENCES tbl_users(id) ON DELETE SET NULL,
     INDEX idx_status (status),
     INDEX idx_course_id (course_id),
     INDEX idx_teacher_id (teacher_id)
@@ -295,50 +348,138 @@ INSERT INTO tbl_courses (course_code, course_name, description, level, duration_
 ('COMM-BEG', 'English Communication Beg', 'Giao tiếp cho người mất gốc', 'Sơ cấp', 40, 3000000, 'Đang mở'),
 ('COMM-ADV', 'Business English', 'Tiếng Anh thương mại chuyên sâu', 'Nâng cao', 40, 6000000, 'Đang mở');
 
--- 5. CLASSES (4 Entries)
-INSERT INTO tbl_classes (course_id, teacher_id, class_code, class_name, schedule, start_date, end_date, max_students, current_students, status) VALUES
-(1, 1, 'C1-ILB', 'IELTS Basic Morning', 'T2-4-6 (08:00-10:00)', '2024-10-01', '2024-12-30', 20, 5, 'Đã kết thúc'),
-(2, 2, 'C2-ILI', 'IELTS Intermediate Night', 'T3-5-7 (18:00-20:00)', '2024-11-15', '2025-02-15', 25, 10, 'Đang mở lớp'),
-(3, 3, 'C3-ILA', 'IELTS Advanced intensive', 'T2-4-6 (19:00-21:00)', '2025-01-05', '2025-04-05', 15, 8, 'Đang mở lớp'),
-(6, 5, 'C4-COM', 'Comm Basic Weekends', 'T7-CN (09:00-11:00)', '2024-12-01', '2025-02-01', 20, 7, 'Đang mở lớp');
+-- 5. CLASSES (4 Entries) - Fixed teacher_id to reference tbl_users
+INSERT INTO tbl_classes (course_id, teacher_id, class_code, class_name, `schedule`, start_date, end_date, max_students, current_students, status) VALUES
+(1, 6, 'C1-ILB', 'IELTS Basic Morning', 'T2-4-6 (08:00-10:00)', '2024-10-01', '2024-12-30', 20, 8, 'Đã kết thúc'),
+(2, 7, 'C2-ILI', 'IELTS Intermediate Night', 'T3-5-7 (18:00-20:00)', '2024-11-15', '2025-02-15', 25, 12, 'Đang mở lớp'),
+(3, 8, 'C3-ILA', 'IELTS Advanced intensive', 'T2-4-6 (19:00-21:00)', '2025-01-05', '2025-04-05', 15, 10, 'Đang mở lớp'),
+(6, 10, 'C4-COM', 'Comm Basic Weekends', 'T7-CN (09:00-11:00)', '2024-12-01', '2025-02-01', 20, 9, 'Đang mở lớp');
 
--- 6. ENROLLMENTS (6 Entries)
+-- 6. ENROLLMENTS (Enhanced - 46 entries across all classes)
+-- Class 1: 8 students (IELTS Basic - completed)
+-- Class 2: 12 students (IELTS Intermediate - active)
+-- Class 3: 10 students (IELTS Advanced - active)
+-- Class 4: 9 students (Communication - active)
 INSERT INTO tbl_enrollments (student_id, class_id, enroll_date, status, payment_status) VALUES
 (1, 1, '2024-09-20', 'Đã hoàn thành', 'Đã thanh toán'),
 (2, 1, '2024-09-22', 'Đã hoàn thành', 'Đã thanh toán'),
+(5, 1, '2024-09-25', 'Đã hoàn thành', 'Đã thanh toán'),
+(7, 1, '2024-09-28', 'Đã hoàn thành', 'Đã thanh toán'),
+(11, 1, '2024-10-01', 'Đã hoàn thành', 'Đã thanh toán'),
+(14, 1, '2024-10-02', 'Đã hoàn thành', 'Đã thanh toán'),
+(17, 1, '2024-10-03', 'Đã hoàn thành', 'Đã thanh toán'),
+(20, 1, '2024-10-05', 'Đã hoàn thành', 'Đã thanh toán'),
 (3, 2, '2024-11-01', 'Đã xác nhận', 'Đã thanh toán'),
 (4, 2, '2024-11-05', 'Đã xác nhận', 'Thanh toán một phần'),
+(6, 2, '2024-11-08', 'Đã xác nhận', 'Đã thanh toán'),
+(8, 2, '2024-11-10', 'Đã xác nhận', 'Đã thanh toán'),
+(12, 2, '2024-11-12', 'Đã xác nhận', 'Đã thanh toán'),
+(15, 2, '2024-11-15', 'Đã xác nhận', 'Chưa thanh toán'),
+(18, 2, '2024-11-18', 'Đã xác nhận', 'Đã thanh toán'),
+(21, 2, '2024-11-20', 'Đã xác nhận', 'Thanh toán một phần'),
+(9, 2, '2024-11-22', 'Đã xác nhận', 'Đã thanh toán'),
+(13, 2, '2024-11-25', 'Đã xác nhận', 'Đã thanh toán'),
+(16, 2, '2024-11-28', 'Đã xác nhận', 'Chưa thanh toán'),
+(19, 2, '2024-12-01', 'Đã xác nhận', 'Đã thanh toán'),
 (10, 3, '2024-12-20', 'Đã xác nhận', 'Đã thanh toán'),
-(15, 3, '2024-12-22', 'Đã xác nhận', 'Chưa thanh toán');
+(15, 3, '2024-12-22', 'Đã xác nhận', 'Chưa thanh toán'),
+(3, 3, '2024-12-25', 'Đã xác nhận', 'Đã thanh toán'),
+(8, 3, '2024-12-28', 'Đã xác nhận', 'Thanh toán một phần'),
+(11, 3, '2025-01-02', 'Đã xác nhận', 'Đã thanh toán'),
+(16, 3, '2025-01-03', 'Đã xác nhận', 'Đã thanh toán'),
+(21, 3, '2025-01-04', 'Đã xác nhận', 'Chưa thanh toán'),
+(6, 3, '2025-01-05', 'Đã xác nhận', 'Đã thanh toán'),
+(13, 3, '2025-01-06', 'Đã xác nhận', 'Đã thanh toán'),
+(18, 3, '2025-01-07', 'Đã xác nhận', 'Thanh toán một phần'),
+(1, 4, '2024-11-28', 'Đã xác nhận', 'Đã thanh toán'),
+(4, 4, '2024-11-30', 'Đã xác nhận', 'Đã thanh toán'),
+(7, 4, '2024-12-02', 'Đã xác nhận', 'Thanh toán một phần'),
+(9, 4, '2024-12-05', 'Đã xác nhận', 'Đã thanh toán'),
+(12, 4, '2024-12-08', 'Đã xác nhận', 'Đã thanh toán'),
+(14, 4, '2024-12-10', 'Đã xác nhận', 'Chưa thanh toán'),
+(17, 4, '2024-12-12', 'Đã xác nhận', 'Đã thanh toán'),
+(19, 4, '2024-12-15', 'Đã xác nhận', 'Đã thanh toán'),
+(22, 4, '2024-12-18', 'Đã xác nhận', 'Thanh toán một phần');
 
--- 7. TRANSACTIONS (20 records cho lịch sử giao dịch)
+-- 7. TRANSACTIONS (Enhanced with enrollment links for student dashboard)
 INSERT INTO tbl_transactions (student_id, enrollment_id, transaction_code, amount, transaction_date, transaction_type, payment_method, status, description, processed_by) VALUES
+-- Student 1 transactions (Lê Văn Dũng) - For Payment History
 (1, 1, 'TXN-0901', 5000000, '2024-09-20 10:00:00', 'Học phí', 'Chuyển khoản', 'Thành công', 'Học phí IELTS Basic', 1),
-(2, 1, 'TXN-0902', 5000000, '2024-09-25 14:30:00', 'Học phí', 'Tiền mặt', 'Thành công', 'Học phí IELTS Basic', 1),
+(1, NULL, 'TXN-1128', 3000000, '2024-11-28 14:00:00', 'Học phí', 'Tiền mặt', 'Thành công', 'Học phí Communication Basic', 1),
+-- Student 2 transactions
+(2, 2, 'TXN-0902', 5000000, '2024-09-25 14:30:00', 'Học phí', 'Tiền mặt', 'Thành công', 'Học phí IELTS Basic', 1),
+-- Other students
 (5, NULL, 'TXN-0903', 1200000, '2024-09-28 09:15:00', 'Giáo trình', 'Ví điện tử', 'Thành công', 'Mua giáo trình', 1),
-(3, 2, 'TXN-1001', 7000000, '2024-10-10 16:00:00', 'Học phí', 'Thẻ tín dụng', 'Thành công', 'Học phí IELTS Intermediate', 1),
-(7, NULL, 'TXN-1002', 3000000, '2024-10-15 11:00:00', 'Học phí', 'Chuyển khoản', 'Thành công', 'Học phí Communication Basic', 1),
+(3, 3, 'TXN-1001', 7000000, '2024-10-10 16:00:00', 'Học phí', 'Thẻ tín dụng', 'Thành công', 'Học phí IELTS Intermediate', 1),
+(7, 4, 'TXN-1002', 3000000, '2024-10-15 11:00:00', 'Học phí', 'Chuyển khoản', 'Thành công', 'Học phí Communication Basic', 1),
 (8, NULL, 'TXN-1101', 4500000, '2024-11-05 09:00:00', 'Học phí', 'Ví điện tử', 'Thành công', 'Học phí TOEIC 650', 1),
-(4, 2, 'TXN-1102', 3500000, '2024-11-12 15:20:00', 'Học phí', 'Tiền mặt', 'Thành công', 'Học phí TOEIC 450 (trả góp)', 1),
+(4, 10, 'TXN-1102', 3500000, '2024-11-12 15:20:00', 'Học phí', 'Tiền mặt', 'Thành công', 'Học phí IELTS Intermediate (trả góp)', 1),
 (12, NULL, 'TXN-1103', 6000000, '2024-11-20 10:45:00', 'Học phí', 'Chuyển khoản', 'Thành công', 'Học phí Business English', 1),
-(10, 3, 'TXN-1201', 10000000, '2024-12-01 08:30:00', 'Học phí', 'Chuyển khoản', 'Thành công', 'Học phí IELTS Advanced', 1),
-(2, 1, 'TXN-1202', 7000000, '2024-12-10 14:00:00', 'Học phí', 'Thẻ tín dụng', 'Thành công', 'Học phí IELTS Intermediate', 1),
-(15, 3, 'TXN-1203', 500000, '2024-12-15 09:10:00', 'Phí ghi danh', 'Tiền mặt', 'Thành công', 'Phí ghi danh', 1),
+(10, 21, 'TXN-1201', 10000000, '2024-12-01 08:30:00', 'Học phí', 'Chuyển khoản', 'Thành công', 'Học phí IELTS Advanced', 1),
+(2, NULL, 'TXN-1202', 7000000, '2024-12-10 14:00:00', 'Học phí', 'Thẻ tín dụng', 'Thành công', 'Học phí IELTS Intermediate', 1),
+(15, 22, 'TXN-1203', 500000, '2024-12-15 09:10:00', 'Phí ghi danh', 'Tiền mặt', 'Thành công', 'Phí ghi danh', 1),
 (18, NULL, 'TXN-0101', 10000000, '2025-01-05 10:00:00', 'Học phí', 'Chuyển khoản', 'Thành công', 'Học phí IELTS Advanced', 1),
 (22, NULL, 'TXN-0102', 4500000, '2025-01-12 16:45:00', 'Học phí', 'Ví điện tử', 'Thành công', 'Học phí TOEIC 650', 1),
-(5, NULL, 'TXN-0103', 3000000, '2025-01-20 11:30:00', 'Học phí', 'Tiền mặt', 'Thành công', 'Học phí Communication Basic', 1),
+(5, 3, 'TXN-0103', 5000000, '2024-09-25 11:30:00', 'Học phí', 'Tiền mặt', 'Thành công', 'Học phí IELTS Basic', 1),
 (11, NULL, 'TXN-0201', 7000000, '2025-02-02 10:00:00', 'Học phí', 'Chuyển khoản', 'Thành công', 'Học phí IELTS Intermediate', 1),
-(14, NULL, 'TXN-0202', 5000000, '2025-02-10 15:30:00', 'Học phí', 'Thẻ tín dụng', 'Thành công', 'Học phí IELTS Basic', 1),
+(14, 6, 'TXN-0202', 5000000, '2024-10-02 15:30:00', 'Học phí', 'Thẻ tín dụng', 'Thành công', 'Học phí IELTS Basic', 1),
 (21, NULL, 'TXN-0203', 10000000, '2025-02-15 09:45:00', 'Học phí', 'Chuyển khoản', 'Thành công', 'Học phí IELTS Advanced', 1),
-(6, NULL, 'TXN-0204', 3500000, '2025-02-18 11:20:00', 'Học phí', 'Ví điện tử', 'Thành công', 'Học phí TOEIC 450', 1),
-(9, NULL, 'TXN-0205', 4500000, '2025-02-21 16:10:00', 'Học phí', 'Tiền mặt', 'Thành công', 'Học phí TOEIC 650', 1);
+(6, 11, 'TXN-0204', 7000000, '2024-11-08 11:20:00', 'Học phí', 'Ví điện tử', 'Thành công', 'Học phí IELTS Intermediate', 1),
+(9, 32, 'TXN-0205', 3000000, '2024-12-05 16:10:00', 'Học phí', 'Tiền mặt', 'Thành công', 'Học phí Communication', 1);
 
 -- 8. BÀI VIẾT & HỖ TRỢ
 INSERT INTO tbl_posts (title, content, author_id, category, status, published_at) VALUES
 ('Chào mừng đến với ODIN', 'Hệ thống quản lý trung tâm Anh ngữ chuyên nghiệp.', 1, 'Tin tức', 'Đã đăng', NOW()),
-('Tips học Reading', 'Chia sẻ bí kíp đạt điểm tối đa phần thi Reading.', 6, 'Bí quyết', 'Đã đăng', NOW());
+('Tips học Reading', 'Chia sẻ bí kíp đạt điểm tối đa phần thi Reading.', 6, 'Bí quyết', 'Đã đăng', NOW()),
+('Khai giảng khóa TOEIC mới', 'Thông báo khai giảng khóa TOEIC 650 tháng 2/2025', 2, 'Tin tức', 'Đã đăng', NOW()),
+('Bí quyết Speaking tự tin', 'Cách vượt qua nỗi sợ nói tiếng Anh', 7, 'Bí quyết', 'Đã đăng', NOW());
 
-INSERT INTO tbl_support_requests (requester_name, requester_email, requester_phone, subject, message, status) VALUES
-('Khách hàng A', 'guest.a@hmail.com', '0988777666', 'Tư vấn khóa SAT', 'Tôi muốn biết lộ trình học SAT.', 'Mới');
+INSERT INTO tbl_support_requests (requester_id, requester_name, requester_email, requester_phone, subject, message, status, assigned_to) VALUES
+(NULL, 'Khách hàng A', 'guest.a@hmail.com', '0988777666', 'Tư vấn khóa SAT', 'Tôi muốn biết lộ trình học SAT.', 'Mới', NULL),
+(14, 'Lê Văn Dũng', 'dung.lv@gmail.com', '0907234567', 'Hỏi về lịch học', 'Lịch học tuần sau có thay đổi không?', 'Đang xử lý', 2),
+(NULL, 'Nguyễn Thị B', 'nguyen.b@gmail.com', '0912345678', 'Đăng ký khóa IELTS', 'Muốn đăng ký khóa IELTS Advanced', 'Mới', NULL),
+(16, 'Vũ Minh Tuấn', 'tuan.vm@gmail.com', '0909234567', 'Hỏi về học phí', 'Có chính sách trả góp không?', 'Đã giải quyết', 2),
+(NULL, 'Trần Văn C', 'tran.c@outlook.com', '0909876543', 'Tư vấn khóa cho doanh nghiệp', 'Cần khóa Business English cho 10 nhân viên', 'Đang xử lý', 3),
+(19, 'Hoàng Thị Hoa', 'hoa.ht@gmail.com', '0908234567', 'Xin giấy chứng nhận', 'Cần giấy chứng nhận hoàn thành khóa', 'Đã giải quyết', 2);
+
+-- 9. LỊCH HỌC (22 schedules - Fixed teacher_id references)
+-- Class 1 (teacher_id=6): 2 completed schedules
+-- Class 2 (teacher_id=7): 6 schedules (3 past, 3 upcoming)
+-- Class 3 (teacher_id=8): 7 schedules (2 past, 5 upcoming)
+-- Class 4 (teacher_id=10): 7 schedules (2 past, 5 upcoming)
+INSERT INTO tbl_schedules (class_id, teacher_id, schedule_date, start_time, end_time, room, status) VALUES
+(1, 6, '2024-12-28', '08:00:00', '10:00:00', 'R201', 'Đã hoàn thành'),
+(1, 6, '2024-12-30', '08:00:00', '10:00:00', 'R201', 'Đã hoàn thành'),
+(2, 7, '2024-12-27', '18:00:00', '20:00:00', 'R302', 'Đã hoàn thành'),
+(2, 7, '2024-12-29', '18:00:00', '20:00:00', 'R302', 'Đã lên lịch'),
+(2, 7, '2024-12-31', '18:00:00', '20:00:00', 'R302', 'Đã lên lịch'),
+(2, 7, DATE_ADD(CURDATE(), INTERVAL 2 DAY), '18:00:00', '20:00:00', 'R302', 'Đã lên lịch'),
+(2, 7, DATE_ADD(CURDATE(), INTERVAL 4 DAY), '18:00:00', '20:00:00', 'R302', 'Đã lên lịch'),
+(2, 7, DATE_ADD(CURDATE(), INTERVAL 6 DAY), '18:00:00', '20:00:00', 'R302', 'Đã lên lịch'),
+(3, 8, '2025-01-06', '19:00:00', '21:00:00', 'R405', 'Đã lên lịch'),
+(3, 8, '2025-01-08', '19:00:00', '21:00:00', 'R405', 'Đã lên lịch'),
+(3, 8, DATE_ADD(CURDATE(), INTERVAL 1 DAY), '19:00:00', '21:00:00', 'R405', 'Đã lên lịch'),
+(3, 8, DATE_ADD(CURDATE(), INTERVAL 3 DAY), '19:00:00', '21:00:00', 'R405', 'Đã lên lịch'),
+(3, 8, DATE_ADD(CURDATE(), INTERVAL 5 DAY), '19:00:00', '21:00:00', 'R405', 'Đã lên lịch'),
+(4, 10, '2024-12-28', '09:00:00', '11:00:00', 'R104', 'Đã hoàn thành'),
+(4, 10, '2024-12-29', '09:00:00', '11:00:00', 'R104', 'Đã hoàn thành'),
+(4, 10, DATE_ADD(CURDATE(), INTERVAL 0 DAY), '09:00:00', '11:00:00', 'R104', 'Đã lên lịch'),
+(4, 10, DATE_ADD(CURDATE(), INTERVAL 1 DAY), '09:00:00', '11:00:00', 'R104', 'Đã lên lịch'),
+(4, 10, DATE_ADD(CURDATE(), INTERVAL 7 DAY), '09:00:00', '11:00:00', 'R104', 'Đã lên lịch'),
+(4, 10, DATE_ADD(CURDATE(), INTERVAL 8 DAY), '09:00:00', '11:00:00', 'R104', 'Đã lên lịch');
+
+-- 10. ĐIỂM DANH (sample cho lịch đầu tiên)
+INSERT INTO tbl_attendance (schedule_id, student_id, status, note) VALUES
+(1, 1, 'Có mặt', NULL),
+(1, 2, 'Có mặt', NULL),
+(1, 3, 'Muộn', '5 phút'),
+(1, 4, 'Vắng', 'Bận việc gia đình'),
+(1, 5, 'Có mặt', NULL);
+
+-- 11. TÀI LIỆU
+INSERT INTO tbl_documents (title, description, file_path, file_type, file_size, category, uploaded_by) VALUES
+('Grammar Basic - Unit 1', 'Tài liệu ngữ pháp cơ bản', '/documents/grammar_basic_unit1.pdf', 'PDF', 2458624, 'Giáo trình', 3),
+('TOEIC Listening Practice', 'Bài tập luyện nghe TOEIC', '/documents/toeic_listening.pdf', 'PDF', 5242880, 'Bài tập', 4),
+('IELTS Writing Sample Essays', 'Bài mẫu IELTS Writing', '/documents/ielts_writing_samples.docx', 'DOCX', 1048576, 'Tài liệu tham khảo', 3);
 
 COMMIT;

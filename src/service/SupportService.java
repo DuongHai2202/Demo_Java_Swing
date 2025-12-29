@@ -9,8 +9,12 @@ import java.util.List;
 public class SupportService {
     private ISupportRepository supportRepository;
 
+    public SupportService(ISupportRepository supportRepository) {
+        this.supportRepository = supportRepository;
+    }
+
     public SupportService() {
-        this.supportRepository = new SupportRepositoryImpl();
+        this(new SupportRepositoryImpl());
     }
 
     public List<SupportRequest> getAllRequests() {

@@ -16,16 +16,13 @@ public class Main {
         }
 
         // Test database connection
-        System.out.println("===========================================");
         System.out.println("ODIN Language Center Management System");
-        System.out.println("===========================================");
 
         DatabaseConnection dbConnection = DatabaseConnection.getInstance();
 
         if (dbConnection.testConnection()) {
-            System.out.println("✓ Database connection successful!");
-            System.out.println("✓ Starting application...");
-            System.out.println("===========================================\n");
+            System.out.println("Kết nối database thành công!");
+            System.out.println("Dự án đang khởi động...\n");
 
             // Start application
             SwingUtilities.invokeLater(() -> {

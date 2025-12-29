@@ -226,7 +226,7 @@ public class EditStaffDialog extends JDialog {
         u.setAddress(address.isEmpty() ? null : address);
 
         String genderString = maleBtn.isSelected() ? "Nam" : (femaleBtn.isSelected() ? "Nữ" : "Khác");
-        u.setGender(models.Gender.fromDisplayName(genderString));
+        u.setGender(utils.enums.Gender.fromDisplayName(genderString));
 
         String dobStr = dobField.getText().trim();
         if (!dobStr.isEmpty()) {
@@ -241,7 +241,7 @@ public class EditStaffDialog extends JDialog {
         }
 
         String statusString = (String) statusComboBox.getSelectedItem();
-        u.setStatus(models.UserStatus.fromDisplayName(statusString));
+        u.setStatus(utils.enums.UserStatus.fromDisplayName(statusString));
 
         staff.setStaffCode(staffCode.isEmpty() ? null : staffCode);
         staff.setPosition(position.isEmpty() ? null : position);

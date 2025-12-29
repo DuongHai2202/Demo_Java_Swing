@@ -1,4 +1,4 @@
-package models;
+package utils.enums;
 
 /**
  * Enum cho loại giao dịch
@@ -25,14 +25,14 @@ public enum TransactionType {
      */
     public static TransactionType fromDisplayName(String text) {
         if (text == null || text.trim().isEmpty()) {
-            return HOC_PHI; // Default
+            return HOC_PHI;
         }
         for (TransactionType type : TransactionType.values()) {
             if (type.displayName.equalsIgnoreCase(text)) {
                 return type;
             }
         }
-        return KHAC; // Default to KHAC if not found
+        return KHAC;
     }
 
     @Override

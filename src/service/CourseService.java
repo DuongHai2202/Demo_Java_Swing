@@ -12,8 +12,12 @@ import java.util.List;
 public class CourseService {
     private ICourseRepository courseRepository;
 
+    public CourseService(ICourseRepository courseRepository) {
+        this.courseRepository = courseRepository;
+    }
+
     public CourseService() {
-        this.courseRepository = new CourseRepositoryImpl();
+        this(new CourseRepositoryImpl());
     }
 
     public List<Course> getAllActiveCourses() {

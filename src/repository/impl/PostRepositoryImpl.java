@@ -96,7 +96,7 @@ public class PostRepositoryImpl implements IPostRepository {
         post.setContent(rs.getString("content"));
         post.setAuthorId(rs.getInt("author_id"));
         post.setCategory(rs.getString("category"));
-        post.setStatus(models.PostStatus.fromDisplayName(rs.getString("status")));
+        post.setStatus(utils.enums.PostStatus.fromDisplayName(rs.getString("status")));
 
         Timestamp published = rs.getTimestamp("published_at");
         if (published != null)

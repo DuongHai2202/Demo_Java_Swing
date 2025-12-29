@@ -1,4 +1,4 @@
-package models;
+package utils.enums;
 
 /**
  * Enum cho phương thức thanh toán
@@ -24,14 +24,14 @@ public enum PaymentMethod {
      */
     public static PaymentMethod fromDisplayName(String text) {
         if (text == null || text.trim().isEmpty()) {
-            return TIEN_MAT; // Default
+            return TIEN_MAT;
         }
         for (PaymentMethod method : PaymentMethod.values()) {
             if (method.displayName.equalsIgnoreCase(text)) {
                 return method;
             }
         }
-        return TIEN_MAT; // Default if not found
+        return TIEN_MAT;
     }
 
     @Override

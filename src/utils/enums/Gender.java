@@ -1,4 +1,4 @@
-package models;
+package utils.enums;
 
 /**
  * Enum cho giới tính
@@ -30,7 +30,7 @@ public enum Gender {
                 return gender;
             }
         }
-        return null; // Return null if not found
+        return null;
     }
 
     @Override

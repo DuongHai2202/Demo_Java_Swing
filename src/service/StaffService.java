@@ -2,7 +2,7 @@ package service;
 
 import models.Staff;
 import models.User;
-import models.UserRole;
+import utils.enums.UserRole;
 import repository.IStaffRepository;
 import repository.IUserRepository;
 import repository.impl.StaffRepositoryImpl;
@@ -17,9 +17,13 @@ public class StaffService {
     private final IStaffRepository staffRepository;
     private final IUserRepository userRepository;
 
+    public StaffService(IStaffRepository staffRepository, IUserRepository userRepository) {
+        this.staffRepository = staffRepository;
+        this.userRepository = userRepository;
+    }
+
     public StaffService() {
-        this.staffRepository = new StaffRepositoryImpl();
-        this.userRepository = new UserRepositoryImpl();
+        this(new StaffRepositoryImpl(), new UserRepositoryImpl());
     }
 
     public List<Staff> getStaffPaginated(int page, int size) {

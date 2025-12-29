@@ -1,7 +1,7 @@
 package service;
 
 import models.User;
-import models.UserRole;
+import utils.enums.UserRole;
 import repository.IUserRepository;
 import repository.impl.UserRepositoryImpl;
 
@@ -13,8 +13,12 @@ import java.util.List;
 public class UserService {
     private final IUserRepository userRepository;
 
+    public UserService(IUserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
     public UserService() {
-        this.userRepository = new UserRepositoryImpl();
+        this(new UserRepositoryImpl());
     }
 
     /**

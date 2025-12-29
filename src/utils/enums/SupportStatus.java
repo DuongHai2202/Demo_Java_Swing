@@ -1,4 +1,4 @@
-package models;
+package utils.enums;
 
 /**
  * Enum cho trạng thái yêu cầu hỗ trợ
@@ -19,19 +19,16 @@ public enum SupportStatus {
         return displayName;
     }
 
-    /**
-     * Lấy SupportStatus từ tên hiển thị (dùng khi đọc từ Database)
-     */
     public static SupportStatus fromDisplayName(String text) {
         if (text == null || text.trim().isEmpty()) {
-            return MOI; // Default
+            return MOI;
         }
         for (SupportStatus status : SupportStatus.values()) {
             if (status.displayName.equalsIgnoreCase(text)) {
                 return status;
             }
         }
-        return MOI; // Default if not found
+        return MOI;
     }
 
     @Override
