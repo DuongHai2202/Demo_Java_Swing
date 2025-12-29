@@ -1,336 +1,211 @@
-# ODIN Language Center - Hệ Thống Quản Lý Trung Tâm Ngoại Ngữ
+# 🎓 ODIN Language Center - Hệ Thống Quản Lý Trung Tâm Anh Ngữ
 
-![Java](https://img.shields.io/badge/Java-17-orange)
-![Swing](https://img.shields.io/badge/GUI-Swing-blue)
-![MySQL](https://img.shields.io/badge/Database-MySQL-blue)
-![License](https://img.shields.io/badge/License-MIT-green)
+Ứng dụng Java Swing quản lý trung tâm tiếng Anh với 4 roles: Admin, Staff, Teacher, Student.
 
-Hệ thống quản lý toàn diện cho trung tâm ngoại ngữ, được xây dựng bằng Java Swing với kiến trúc MVC, hỗ trợ đầy đủ các chức năng quản lý học viên, giảng viên, nhân viên, khóa học, giao dịch và báo cáo thống kê.
+## ✨ Tính Năng Chính
 
-## 📋 Mục Lục
+### 👨‍💼 Admin Dashboard
+- Quản lý người dùng (Staff, Teacher, Student)
+- Quản lý khóa học & lớp học
+- Quản lý giao dịch thanh toán
+- Báo cáo & thống kê chi tiết
+- Xuất báo cáo CSV
 
-- [Tính Năng](#-tính-năng)
-- [Tech Stack](#-tech-stack)
-- [Cài Đặt](#-cài-đặt)
-- [Sử Dụng](#-sử-dụng)
-- [Cấu Trúc Project](#-cấu-trúc-project)
-- [Database Schema](#-database-schema)
-- [Screenshots](#-screenshots)
-- [Đóng Góp](#-đóng-góp)
-- [License](#-license)
+### 👥 Staff Dashboard
+- Xử lý yêu cầu hỗ trợ
+- Quản lý bài viết/thông báo
+- Quản lý lịch học
+- Điểm danh học viên
 
-## ✨ Tính Năng
+### 👨‍🏫 Teacher Dashboard
+- Xem lớp được phân công
+- Lịch giảng dạy
+- **Điểm danh học viên** ✅
+- Thống kê giảng dạy
 
-### 🔐 Xác Thực & Phân Quyền
-- **Multi-role authentication**: Quản trị viên, Nhân viên, Giảng viên, Học viên
-- **Role-based access control** (RBAC)
-- **Demo accounts** để test nhanh
-- **Password encryption** (có thể mở rộng)
+### 🎓 Student Dashboard  
+- Xem khóa học đã đăng ký
+- Lịch sử thanh toán
+- Quản lý hồ sơ cá nhân
 
-### 👥 Quản Lý Người Dùng
-- **Quản lý tài khoản**: CRUD operations cho tất cả users
-- **Phân trang**: Hiển thị danh sách với pagination
-- **Tìm kiếm & lọc**: Theo role, status, từ khóa
-- **Quản lý trạng thái**: Đang hoạt động, Ngừng hoạt động, Tạm khóa
+## 🛠️ Tech Stack
 
-### 📚 Quản Lý Học Viên
-- Thông tin cá nhân đầy đủ
-- Mã học viên, trình độ hiện tại
-- Lịch sử đăng ký khóa học
-- Theo dõi tiến trình học tập
+- **Language:** Java 17+
+- **UI Framework:** Swing với FlatLaf
+- **Database:** MySQL 8.0
+- **Architecture:** MVC Pattern
+- **JDBC:** MySQL Connector 8.0.33
 
-### 👨‍🏫 Quản Lý Nhân Viên & Giảng Viên
-- **Staff**: Mã nhân viên, chức vụ, phòng ban, ngày vào làm
-- **Teachers**: Chuyên môn, bằng cấp, kinh nghiệm, tiểu sử
-- Quản lý thông tin chi tiết từng loại user
+## 📁 Cấu Trúc Dự Án
 
-### 💰 Quản Lý Giao Dịch
-- **Transaction types**: Học phí, Đăng ký, Hoàn tiền, Phí khác
-- **Payment methods**: Tiền mặt, Chuyển khoản, Thẻ, Ví điện tử
-- **Status tracking**: Đang chờ, Đã thanh toán, Thất bại, Hoàn tiền
-- Tìm kiếm giao dịch theo từ khóa
-- Báo cáo doanh thu
+```
+src/
+├── controller/          # Business logic controllers
+│   ├── admin/          # Admin controllers
+│   ├── student/        # Student controller
+│   ├── teacher/        # Teacher controller
+│   └── staff/          # Staff controller
+├── models/             # Data models (User, Student, Course...)
+├── repository/         # Data access layer
+│   ├── impl/          # Repository implementations
+│   └── I*Repository   # Repository interfaces
+├── service/            # Business services
+├── utils/              # Utilities (UIUtils, DatabaseConnection...)
+├── view/               # UI components
+│   ├── admin/         # Admin dashboard
+│   ├── student/       # Student dashboard
+│   ├── teacher/       # Teacher dashboard
+│   └── staff/         # Staff dashboard
+└── Main.java          # Application entry point
 
-### 📊 Báo Cáo & Thống Kê
-- **Thống kê tổng quan**: Số lượng học viên, giảng viên, khóa học
-- **Doanh thu theo tháng**: Biểu đồ line chart
-- **Thống kê theo loại giao dịch**: Pie chart
-- **Hoạt động gần đây**: 10 transactions mới nhất
+database/
+└── schema.sql         # Database schema & sample data
+```
 
-### 📝 Quản Lý Bài Viết & Hỗ Trợ
-- **Posts**: Tạo, chỉnh sửa bài viết/thông báo
-- **Support Requests**: Tiếp nhận và xử lý yêu cầu hỗ trợ
-- Status tracking cho cả 2 modules
+## 🚀 Cài Đặt & Chạy
 
-### 🎨 Giao Diện Người Dùng
-- **Modern UI**: Sử dụng FlatLaf Look & Feel
-- **Responsive design**: Split layout, GridLayout, BoxLayout
-- **Clean aesthetics**: Gradient backgrounds, rounded corners, icons
-- **Intuitive navigation**: Dashboard với sidebar menu
-- **Drag-to-move**: Login window có thể kéo thả
+### 1. Yêu Cầu Hệ Thống
+- JDK 17 trở lên
+- MySQL 8.0+
+- IDE: IntelliJ IDEA / Eclipse / VS Code
 
-## 🛠 Tech Stack
+### 2. Cài Đặt Database
 
-### Core Technologies
-- **Java 17+**: Programming language
-- **Swing**: GUI framework
-- **JDBC**: Database connectivity
-- **MySQL 8.0+**: Relational database
-
-### Libraries & Frameworks
-- **FlatLaf 3.4.1**: Modern Look & Feel
-- **MySQL Connector/J 8.0.33**: JDBC driver
-
-### Architecture
-- **MVC Pattern**: Model-View-Controller
-- **Repository Pattern**: Data access abstraction
-- **Service Layer**: Business logic separation
-- **DAO Pattern**: Database operations
-
-### Code Quality
-- **Vietnamese documentation**: Comprehensive Javadoc
-- **Enum-based configuration**: Type-safe constants
-- **Standardized code style**: Consistent across 73 files
-- **Clean code principles**: SOLID, DRY, separation of concerns
-
-## 📥 Cài Đặt
-
-### Yêu Cầu Hệ Thống
-- Java JDK 17 trở lên
-- MySQL Server 8.0+
-- IDE: IntelliJ IDEA, Eclipse, NetBeans (optional)
-
-### Bước 1: Clone Repository
 ```bash
-git clone https://github.com/yourusername/odin-language-center.git
-cd odin-language-center
+# Import schema vào MySQL
+mysql -u root -p < database/schema.sql
 ```
 
-### Bước 2: Cấu Hình Database
-1. Tạo database MySQL:
-```sql
-CREATE DATABASE odin_language_center CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-```
+### 3. Cấu Hình Kết Nối
 
-2. Import schema và data:
-```bash
-mysql -u root -p odin_language_center < database/schema.sql
-mysql -u root -p odin_language_center < database/sample_data.sql
-```
-
-3. Cập nhật thông tin kết nối trong `src/database/DatabaseConnection.java`:
+Chỉnh `src/utils/DatabaseConnection.java`:
 ```java
-private static final String URL = "jdbc:mysql://localhost:3306/odin_language_center?useUnicode=true&characterEncoding=UTF-8";
+private static final String URL = "jdbc:mysql://localhost:3306/english_center";
 private static final String USER = "root";
 private static final String PASSWORD = "your_password";
 ```
 
-### Bước 3: Build & Run
+### 4. Biên Dịch & Chạy
 
-#### Sử dụng Scripts (Recommended)
+**Windows:**
 ```bash
 # Compile
-.\compile.bat   # Windows
-./compile.sh    # Linux/Mac
+.\compile.bat
 
 # Run
-.\run.bat       # Windows
-./run.sh        # Linux/Mac
+.\run.bat
 ```
 
-#### Sử dụng IDE
-1. Import project vào IDE
-2. Add libraries: `lib/flatlaf-3.4.1.jar`, `lib/mysql-connector-j-8.0.33.jar`
-3. Run `src/Main.java`
+**Manual:**
+```bash
+# Compile
+javac -d bin -cp "lib/*" src/**/*.java
 
-## 🚀 Sử Dụng
-
-### Demo Accounts
-
-| Role | Username | Password | Mô Tả |
-|------|----------|----------|-------|
-| Admin | `admin` | `123456` | Quản trị viên - Full access |
-| Staff | `staff1` | `123456` | Nhân viên - Quản lý posts & support |
-| Teacher | `teacher1` | `123456` | Giảng viên - Xem thông tin |
-| Student | `student1` | `123456` | Học viên - Xem thông tin cá nhân |
-
-### Quick Start
-1. Chạy ứng dụng
-2. Click vào demo link (Admin/Staff/Teacher/Student) để tự động điền
-3. Click "ĐĂNG NHẬP"
-4. Explore các tính năng theo role
-
-### Luồng Sử Dụng Chính
-
-#### Quản Trị Viên
-1. **Dashboard** → Xem tổng quan hệ thống
-2. **Quản Lí Học Viên** → Thêm/Sửa/Xóa học viên
-3. **Quản Lí Nhân Viên** → Quản lý staff và teachers
-4. **Quản Lí Giao Dịch** → Theo dõi payment
-5. **Quản Lí Tài Khoản** → Quản lý users và permissions
-6. **Báo Cáo - Thống Kê** → Xem reports và charts
-
-#### Nhân Viên
-1. **Bài Viết** → Tạo/chỉnh sửa thông báo
-2. **Hỗ Trợ** → Xử lý support requests từ học viên
-
-## 📁 Cấu Trúc Project
-
-```
-odin-language-center/
-├── src/
-│   ├── Main.java                    # Entry point
-│   ├── controller/                  # Controllers (MVC)
-│   │   ├── AuthController.java
-│   │   └── admin/
-│   │       ├── AccountController.java
-│   │       ├── StaffController.java
-│   │       ├── StudentController.java
-│   │       ├── TransactionController.java
-│   │       └── ReportingController.java
-│   ├── models/                      # Domain models
-│   │   ├── User.java
-│   │   ├── Student.java
-│   │   ├── Staff.java
-│   │   ├── Teacher.java
-│   │   ├── Transaction.java
-│   │   ├── Course.java
-│   │   ├── Post.java
-│   │   ├── SupportRequest.java
-│   │   └── [12 enum types]
-│   ├── repository/                  # Data access layer
-│   │   ├── *.java                   # Interfaces (7 files)
-│   │   └── impl/                    # Implementations (7 files)
-│   ├── service/                     # Business logic layer
-│   │   ├── UserService.java
-│   │   ├── StaffService.java
-│   │   ├── StudentService.java
-│   │   ├── TransactionService.java
-│   │   └── [3 more services]
-│   ├── view/                        # UI layer (Swing)
-│   │   ├── LoginFrame.java
-│   │   ├── admin/
-│   │   │   ├── AdminDashboard.java
-│   │   │   ├── dialogs/             # 5 dialog files
-│   │   │   └── panels/              # 6 panel files
-│   │   ├── staff/                   # Staff UI
-│   │   └── components/              # Reusable components
-│   ├── database/                    # Database utilities
-│   │   └── DatabaseConnection.java
-│   └── utils/                       # Utility classes
-│       └── UIUtils.java
-├── lib/                             # External libraries
-│   ├── flatlaf-3.4.1.jar
-│   └── mysql-connector-j-8.0.33.jar
-├── database/                        # SQL scripts
-│   ├── schema.sql
-│   └── sample_data.sql
-├── compile.bat / compile.sh         # Build scripts
-├── run.bat / run.sh                 # Run scripts
-└── README.md
+# Run  
+java -cp "bin;lib/*" Main
 ```
 
-## 🗄 Database Schema
+## 👤 Tài Khoản Demo
 
-### Core Tables
+| Role | Username | Password |
+|------|----------|----------|
+| Admin | admin1 | 123456 |
+| Staff | staff1 | 123456 |
+| Teacher | teacher1 | 123456 |
+| Student | student1 | 123456 |
 
-#### `tbl_users`
-- `id`, `username`, `password`, `role`, `full_name`, `email`, `phone`
-- `gender`, `date_of_birth`, `address`, `status`
-- `created_at`, `updated_at`
+## 📊 Database Schema
 
-#### `tbl_students`
-- `id`, `user_id` (FK), `student_code`, `current_level`
+**14 Tables:**
+- `tbl_users` - Người dùng chính
+- `tbl_students` - Thông tin học viên
+- `tbl_teachers` - Thông tin giảng viên
+- `tbl_staff` - Thông tin nhân viên
+- `tbl_courses` - Khóa học
+- `tbl_classes` - Lớp học
+- `tbl_enrollments` - Đăng ký học
+- `tbl_schedules` - Lịch học
+- `tbl_attendance` - Điểm danh
+- `tbl_transactions` - Giao dịch
+- `tbl_posts` - Bài viết
+- `tbl_support_requests` - Yêu cầu hỗ trợ
+- `tbl_documents` - Tài liệu
+- `tbl_ratings` - Đánh giá
 
-#### `tbl_staff`
-- `id`, `user_id` (FK), `staff_code`, `position`, `department`, `hire_date`
+## 🎨 UI Features
 
-#### `tbl_teachers`
-- `id`, `user_id` (FK), `teacher_code`, `specialization`, `qualification`
-- `years_of_experience`, `bio`
+- Modern flat design với FlatLaf  
+- Responsive layouts
+- Vietnamese language support
+- Consistent color scheme
+- Professional dashboards
+- Interactive tables & forms
 
-#### `tbl_transactions`
-- `id`, `student_id` (FK), `enrollment_id`, `transaction_code`
-- `amount`, `transaction_date`, `transaction_type`, `payment_method`
-- `status`, `description`, `processed_by`
+## 🔐 Bảo Mật
 
-#### `tbl_posts`
-- `id`, `title`, `content`, `author_id` (FK), `category`
-- `status`, `published_at`, `created_at`, `updated_at`
+- Password hashing (sẽ implement)
+- Role-based access control
+- Session management
+- SQL injection prevention (PreparedStatement)
 
-#### `tbl_support_requests`
-- `id`, `requester_id`, `requester_name`, `requester_email`
-- `subject`, `message`, `status`, `assigned_to`, `created_at`, `updated_at`
+## 📝 Sample Data
 
-### Relationships
-- **1:1**: User ↔ Student/Staff/Teacher
-- **1:N**: Student → Transactions
-- **1:N**: User → Posts
-- **1:N**: User → Support Requests
+Schema bao gồm:
+- 35 users (admin, staff, teachers, students)
+- 7 courses (IELTS, TOEIC, Communication)
+- 4 active classes
+- 39 enrollments
+- 22 schedules
+- 20+ transactions
 
-### Enum Values (Vietnamese)
-- **Roles**: Quản trị viên, Nhân viên, Giảng viên, Học viên
-- **User Status**: Đang hoạt động, Ngừng hoạt động, Tạm khóa
-- **Transaction Types**: Học phí, Đăng ký, Hoàn tiền, Phí khác
-- **Payment Methods**: Tiền mặt, Chuyển khoản, Thẻ, Ví điện tử
-- **Transaction Status**: Đang chờ, Đã thanh toán, Thất bại, Hoàn tiền
+## 🐛 Troubleshooting
 
-## 📸 Screenshots
+**Lỗi kết nối database:**
+```
+Kiểm tra MySQL đang chạy
+Kiểm tra username/password
+Kiểm tra database đã import
+```
 
-### Login Screen
-- Modern split-screen design
-- Gradient background
-- Demo account quick access
+**Compilation error:**
+```
+Kiểm tra JDK version >= 17
+Kiểm tra lib/ có đủ jar files
+```
 
-### Admin Dashboard
-- Statistical overview cards
-- Clean navigation sidebar
-- Multi-panel content area
+## 📚 Development Notes
 
-### Management Panels
-- Paginated tables
-- Search & filter functionality
-- CRUD dialogs
+**Key Design Patterns:**
+- MVC Architecture
+- Repository Pattern
+- Dependency Injection
+- Observer Pattern (UI updates)
 
-### Reports & Charts
-- Line charts for revenue
-- Pie charts for statistics
-- Recent activity feed
+**Code Standards:**
+- Vietnamese comments
+- Consistent naming
+- Clean code principles
+- Proper error handling
 
-## 🤝 Đóng Góp
+## 🚧 Roadmap
 
-Contributions are welcome! Để đóng góp:
+- [ ] Implement password hashing
+- [ ] Add email notifications
+- [ ] Export reports to PDF
+- [ ] Advanced analytics dashboard
+- [ ] Mobile responsive design
+- [ ] REST API layer
 
-1. Fork project
-2. Tạo feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to branch (`git push origin feature/AmazingFeature`)
-5. Tạo Pull Request
+## 👨‍💻 Author
 
-### Coding Standards
-- Vietnamese Javadoc cho classes và methods quan trọng
-- Simple comment style (không dùng section separators)
-- Tuân thủ MVC architecture
-- Follow existing code conventions
+**ODIN Language Center Development Team**
 
-## 📝 License
+## 📄 License
 
-Distributed under the MIT License. See `LICENSE` for more information.
-
-## 👥 Authors
-
-- **ODIN Development Team** - *Initial work*
-
-## 🙏 Acknowledgments
-
-- [FlatLaf](https://www.formdev.com/flatlaf/) - Modern Look & Feel
-- [MySQL](https://www.mysql.com/) - Database
-- Swing community for UI patterns
-
-## 📞 Contact
-
-Project Link: [https://github.com/yourusername/odin-language-center](https://github.com/yourusername/odin-language-center)
+Educational Project - Free to use and modify
 
 ---
 
-**⭐ Nếu project hữu ích, đừng quên star repo!**
+**Version:** 2.0  
+**Last Updated:** 2025-12-29  
+**Status:** Active Development ✅
